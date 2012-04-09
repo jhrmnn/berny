@@ -1,4 +1,6 @@
-function H = updatehessian(dq,dg,H)
+function H = updatehessian(q,g,H)
+	dq = correct(q.now-q.best);
+	dg = g.now-g.best;
 	BFGS = dg*dg'/(dq'*dg)-H*(dq*dq')*H/(dq'*H*dq); % BFGS update
 	MS = (dg-H*dq)*(dg-H*dq)'/(dq'*(dg-H*dq)); % MS update
 	Q = abs(dq'*(dg-H*dq))/(norm(dq)*norm(dg-H*dq)); % Bofill's coeff

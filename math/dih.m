@@ -1,3 +1,5 @@
+% 12/04/09
+
 function [Phi,grad] = dih(xyz,grad)
 	v1 = xyz(1,:)-xyz(2,:);
 	v2 = xyz(4,:)-xyz(3,:);
@@ -16,11 +18,9 @@ function [Phi,grad] = dih(xyz,grad)
 		sc = 1;
 	end
 	Phi = acos(sc)*sgn;
-	if ~exist('grad','var')
-		return
-	end
+	if nargin == 1, return, end
 	grad = zeros(4,3);
-	if norm(Phi)>pi-1e-6 % limit case for phi=180
+	if norm(Phi) > pi-1e-6 % limit case for phi = 180
 		g = cross(w,a1);
 		g = g/norm(g);
 		grad(1,:) = g/norm(g)/norm(a1);
@@ -29,7 +29,7 @@ function [Phi,grad] = dih(xyz,grad)
 		B = v2*ew'/norm(w);
 		grad(3,:) = -((1+B)/norm(a2)+A/norm(a1))*g;
 		grad(2,:) = -((1-A)/norm(a1)-B/norm(a2))*g;
-	elseif norm(Phi)<1e-6 % limit case for phi=0
+	elseif norm(Phi) < 1e-6 % limit case for phi = 0
 		g = cross(w,a1);
 		g = g/norm(g);
 		grad(1,:) = g/norm(g)/norm(a1);
@@ -48,4 +48,10 @@ function [Phi,grad] = dih(xyz,grad)
 		grad(2,:) = ((1-A)*a2-B*a1)/(norm(a1)*norm(a2)*sin(Phi)) ...
 			- cot(Phi)*((1-A)*a1/norm(a1)^2-B*a2/norm(a2)^2);
 	end
+end
+
+function c = cross(a,b)
+	c = [a(2)*b(3)-a(3)*b(2);...
+		a(3)*b(1)-a(1)*b(3);...
+		a(1)*b(2)-a(2)*b(1)];
 end

@@ -1,6 +1,10 @@
 function allowed = readallowed(filename)
-	allowed = struct('types',[],'elems',[],'atoms',[]);
+	if isempty(filename)
+		allowed = [];
+		return
+	end
 	fid = fopen(filename,'r');
+	allowed = struct('types',[],'elems',[],'atoms',[]);
 	itypes = 1;
 	ielems = 1;
 	while ~feof(fid)
@@ -10,11 +14,11 @@ function allowed = readallowed(filename)
 		B = str2num(b);
 		if isempty(A)
 			if isempty(B)
-				allowed.types{itypes}{1} = a;
-				allowed.types{itypes}{2} = b;
+				allowed.types{itypes}{1} = element(a);
+				allowed.types{itypes}{2} = element(b);
 				itypes = itypes+1;
 			else
-				allowed.elems{ielems}{1} = a;
+				allowed.elems{ielems}{1} = element(a);
 				allowed.elems{ielems}{2} = B;
 				ielems = ielems+1;
 			end

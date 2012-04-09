@@ -1,4 +1,6 @@
-function [dq,deP,onsphere] = quadraticstep(g,H,trust)
+function [dq,deP] = quadraticstep(proj,g,H,trust)
+	g = proj*g.i;
+	H = proj*H*proj+1e4*(eye(size(proj))-proj);
 	ev = sort(real(eig(H)));
 	dq = -H\g;
 	if ev(1) > 0 && norm(dq) < trust
@@ -14,6 +16,7 @@ function [dq,deP,onsphere] = quadraticstep(g,H,trust)
 		onsphere = true; % minimization on sphere was performed
 	end
 	deP = g'*dq+0.5*dq'*H*dq; % predicted energy change
-	print('Quadratic step: RMS: %g, maximum absolute: %g\n',rms(dq),max(abs(dq)));
+	print('Quadratic step: RMS: %g, maximum absolute: %g\n',...
+		rms(dq),max(abs(dq)));
 	print('Predicted energy change from quadratic step: %g\n',deP);
 end

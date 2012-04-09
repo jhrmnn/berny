@@ -1,30 +1,33 @@
-% returns standard covalent and van der waals radius of atom
+% returns standard covalent and van der waals radius of atoms.
+% 12/04/05
 
-function x = radius(s)
-	switch s
-		case 'H'
-			x = [0.37 1.20];
-		case 'B'
-			x = [0.82 1.92];
-		case 'C'
-			x = [0.77 1.70];
-		case 'N'
-			x = [0.77 1.55];
-		case 'O'
-			x = [0.73 1.52];
-		case 'F'
-			x = [0.71 1.47];
-		case 'Cl'
-			x = [0.99 1.75];
-		case 'Ag'
-			x = [1.53 1.72];
-		case 'Si'
-			x = [1.11 2.10];
-		case 'Al'
-			x = [1.18 1.84];
-		case 'Na'
-			x = [1.54 2.27];
-		case 'Cu'
-			x = [1.32 1.40];
+function R = radius(atoms,type)
+	data = [... % Z | covalent radius | vdW radius
+		1 0.37 1.20;...
+		5 0.82 1.92;...
+		6 0.77 1.70;...
+		7 0.77 1.55;...
+		8 0.73 1.52;...
+		9 0.71 1.47;...
+		17 0.99 1.75;...
+		47 1.53 1.72;...
+		14 1.11 2.10;...
+		13 1.18 1.84;...
+		11 1.54 2.27;...
+		29 1.32 1.40];
+	R = zeros(100,1);
+	if nargin > 1
+		switch type
+			case 'covalent'
+				R(data(:,1)) = data(:,2);
+			case 'vdw'
+				R(data(:,1)) = data(:,3);
+		end
+	else
+		R(data(:,1)) = data(:,2);
+	end
+	R = R(atoms);
+	if any(R==0)
+		error('No radius data for atom %s',element(R(find(R==0,1))));
 	end
 end
