@@ -1,50 +1,53 @@
-% performs one step of Berny algorithm
+% performs one step of Berny algorithm. 12/04/12
 
-function [geom,state] = berny(geom,energy)	
-	load workspace.mat ...
-		q e g H trust steps ...
-		coords symm threshold w
+function [geom,state] = berny(geom,energy)
+	load berny.mat q w e g H trust steps coords symm threshold
+	steps = steps+1;
+	print('');
 	e.now = energy.E; % energy
 	g.now = reshape(energy.g',3*geom.n,1); % cartesian gradient
-	alwaysprint('Energy: %4.12f\n',e.now);
+	print('Energy: %.12f',e.now,'always');
 	B = Bmat(geom,coords); % Wilson B-matrix
-	G = B*B'; 
+	G = B*B';
 	Gi = ginv(G);
+	Bi = B'*Gi';
 	proj = G*Gi; % projector on nonredundant subspace
-	g.now = w\Gi*B*g.now; % internal weighted gradient
+	g.now = Bi'*g.now; % internal gradient
 	if steps > 1
-		load workspace.mat mintrust
-		H = updatehessian(q,g,H);
-		trust = updatetrust(q,e,trust,mintrust);
-		[t,e.i] = linearsearch(q,e,g);
-		q.i = q.best+t*correct(q.now-q.best);
-		g.i = g.best+t*(g.now-g.best); % interpolation of gradient
-		q.dql = (t-1)*correct(q.now-q.best);
+		H = updatehessian(H,correct(q.now-q.best),g.now-g.best);
+		trust = updatetrust(e.now-e.last,e.deP,q.dqq,trust);
+		dq = correct(q.best-q.now);
+		[t,ei] = linearsearch(e.now,e.best,g.now'*dq,g.best'*dq);
+		%[t,ei] = deal(0,e.now); % no linear interpolation
+		e.deP = ei-e.now;
+		q.dql = t*dq;
+		q.i = q.now+q.dql;
+		g.i = g.now+t*(g.best-g.now);
 	else
-		print('First step: no linear search\n');
+		print('First step: no linear search');
 		[q,e,g] = shift('now','i',q,e,g);
+		e.deP = 0;
 		q.dql = 0;
 	end
-	[q.dqq,e.deP] = quadraticstep(proj,g,H,trust);
-	state = testconvergence(proj*w*g.i,q.dqtot,threshold);
-	[q,e,g] = shift('now','last',q,e,g); % previous calculated point
-	q.total = q.dql+q.dqq;
-	print('Total step: RMS: %g, maximum absolute: %g\n',...
-		rms(q.total),max(abs(q.total)));
-	[geom.xyz,q.now] = red2car(q,coords,geom);
-	q.dqtot = correct(q.now-q.last);
-	if steps <= 1 || e.last < e.best
-		[q,e,g] = shift('last','best',q,e,g);
-	end
-	if ~isempty(symm)
-		geom.xyz = symmetrize(geom,symm);
-	end
+	Hproj = proj*H*proj+1000*(eye(size(H))-proj);
+	[q.dqq,de] = quadraticstep(proj*g.i,Hproj,w,trust);
+	e.deP = e.deP+de;
+	q.dq = q.dql+q.dqq;
+	print('Total step: RMS: %.3g, max: %.3g',...
+		rms(q.dq),max(abs(q.dq)));
+	[geom.xyz,q.new] = red2car(q.dq,q.now,Bi,geom,coords,symm);
+	q.dq = correct(q.new-q.now);
+	state = testconvergence(proj*g.i,q,threshold,trust);
 	if state
-		print('Optimization ended after %d steps\n',steps);
+		print('Optimization ended after %i steps',steps);
 		return
 	end
-	steps = steps+1;
- 	save -v6 -append workspace.mat H e g q steps
+	if steps == 1 || e.now < e.best
+		[q,e,g] = shift('now','best',q,e,g);
+	end
+	q.now = q.new;
+	e.last = e.now;
+ 	save -v6 -append berny.mat q e g H trust steps
 end
 
 function varargout = shift(from,to,varargin)

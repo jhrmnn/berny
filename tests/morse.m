@@ -26,6 +26,6 @@ function [E,g] = morse(xyz,abc)
 	drVij = drV(r,r0);
 	dxyzVij = reshape(drVij(:,ones(1,3)).*delta./r(:,ones(1,3)),n,m,3);
 	dxyzVij(isnan(dxyzVij)) = 0;
-	g = permute(sum(dxyzVij,2)/2,[1 3 2]); % gradient
+	g = permute(sum(dxyzVij,2),[1 3 2]); % gradient
 end
 

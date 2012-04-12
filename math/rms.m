@@ -1,3 +1,8 @@
+% RMS. 12/04/12
+
 function x = rms(A)
-	x = sqrt(sum(sum(A.^2))/numel(A));
+	if isempty(A)
+		x = []; return
+	end
+	x = sqrt(sum(A(:).^2)/numel(A));
 end

@@ -1,29 +1,31 @@
-% generalized inverse of matrix
+% generalized inverse of matrix. 12/04/12
 
 function A = ginv(A)
 	[U,S,V] = svd(A);
-	U = real(U);
-	V = real(V);
-	D = diag(real(S));
-	Dsorted = sort(abs(D));
-	thre = 1e-10;
+	D = diag(S);
+	thre1 = 1e-14;
+	thre2 = 1000;
+	thre3 = 1e8;
 	while true
-			i = find(Dsorted>thre,1);
-			if i==1
-				break
-			end
-			if Dsorted(i)/Dsorted(i-1)<1000
-					thre=10*thre;
-			else
-					break
-			end
-			if thre > 0.1
-					error('I cannot make the generalized inverse')
-			end
+		i = find(D<thre1,1);
+		if isempty(i)
+			i = length(D);
+		end
+		if i == 1
+			error('Cannot make generalized inverse of zero matrix');
+		end
+		gap = D(i-1)/D(i);
+		if gap > thre2, break, end
+		thre1 = 10*thre1;
+		if thre1 >= D(1)
+			error('Pseudoinverse: there is nowhere a gap of %g',gap);
+		end
 	end
-	print('Generalized inverse: %.3e, %.3e\n',Dsorted([i-1 i]));
-	D(abs(D)<thre) = 0;
-	D(abs(D)>0) = 1./D(abs(D)>0);
+	if gap < thre3
+		print('! Warning: Pseudoinverse gap: %.3g',gap);
+	end
+	D(D<thre1) = 0;
+	D(D>0) = 1./D(D>0);
 	A = V*diag(D)*U';
 end
 	

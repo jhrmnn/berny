@@ -40,6 +40,7 @@ function [dihs,idih] = makedih(dihs,idih,c,bond,xyz,C)
 		end
 		for j1 = ind1
 			for j2 = ind2
+				if neigh1(j1) == neigh2(j2), continue, end
 					idih = idih+1;
 					if mod(idih,1000) == 1
 						dihs = [dihs; zeros(1000,5)];

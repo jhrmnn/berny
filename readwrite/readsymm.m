@@ -2,8 +2,7 @@
 
 function symm = readsymm(filename)
 	if isempty(filename)
-		symm = [];
-		return
+		symm = []; return
 	end
 	fid = fopen(filename,'r');
 	i = 0;

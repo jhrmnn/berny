@@ -5,13 +5,6 @@ function param = setparam(jobfile)
 	if nargin > 0
 		param = addparams(param,jobfile);
 	end
-	if param.logfile
-		param.fid = fopen(param.logfile,'a');
-	else
-		param.fid = 1;
-	end
-	param.threshold = [param.gradientmax param.gradientrms...
-		param.stepmax param.steprms];
 end
 
 function param = defaults()
@@ -21,9 +14,9 @@ function param = defaults()
 	param.steprms = 1.2e-3;
 	param.maxsteps = 100;
 	param.trust = 0.3;
-	param.allowed = [];
-	param.symmetry = [];
-	param.logfile = [];
+	param.allowed = '';
+	param.symmetry = '';
+	param.logfile = '';
 end
 
 function param = addparams(param,file)

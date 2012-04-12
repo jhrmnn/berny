@@ -2,9 +2,9 @@
 
 function coordanalysis(ind,nfrag)
 	m = size(ind,1);
-	alwaysprint('Coordinates information:\n');
-	alwaysprint('* Number of fragments: %g\n',nfrag);
-	alwaysprint('* Number of internal coordinates: %g\n',m);
+	print('Coordinates information:');
+	print('* Number of fragments (in supercell): %g',nfrag);
+	print('* Number of internal coordinates: %g',m);
 	idih = find(ind(:,4),1);
 	if isempty(idih), idih = m+1; end
 	iangle = find(ind(:,3),1);
@@ -18,7 +18,7 @@ function coordanalysis(ind,nfrag)
 		for l = 1:degrees(k)
 			number = length(find(ind(i(k):i(k+1)-1,5)==l-1));
 			if number > 0
-				alwaysprint('* Number of %s %s: %g\n',...
+				print('* Number of %s %s: %g',...
 					adjectives{l},names{k},number);
 			end
 		end

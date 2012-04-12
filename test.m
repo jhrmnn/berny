@@ -7,35 +7,36 @@ function test()
 		hcrystal();
 		fau();
 		acetic();
-	catch ME
-		delete workspace.mat
-		rethrow(ME);
+	catch % octave doesn't know "catch ME"
+		delete berny.mat
+		rethrow(lasterror);
 	end
 end
 
 function h3molecule()
 	name = 'H3 molecule';
 	geom.n = 3;
-	geom.atoms = [1 1 1]';
-	geom.xyz = 0.75/sqrt(2)*eye(3);
-	geom.xyz(1,2) = 0.2;
+	geom.atoms = [1 1 1];
+	geom.xyz = [0 0 0; 1 1 0; 2 -1 1];
 	geom.periodic = false;
 	param = setparam();
-	testcase(name,geom,param,-3);
+	param.trust = 0.01;
+	param.stepmax = 1e-5;
+	testcase(name,geom,param,-3,'berny');
 end
 
 function hcrystal()
 	name = 'H crystal';
 	geom.n = 2;
-	geom.atoms = [1 1]';
+	geom.atoms = [1 1];
 	geom.xyz = 0.75/2*[1 0 0; -1 0 0];
 	geom.periodic = true;
 	geom.abc = diag([1.5 0.75 0.75]);
 	bench = morse(geom.xyz,diag(geom.abc));
-	geom.xyz(:,1) = 0.75/2*[1; -1.01];
+	geom.xyz(:,1) = 0.75/2*[1; -1.1];
 	param = setparam();
 	param.symmetry = 'h.symm';
-	testcase(name,geom,param,bench);
+	testcase(name,geom,param,bench,'berny');
 end
 
 function fau()
@@ -43,39 +44,47 @@ function fau()
 	geom = car2geom('fau.vasp');
 	param = setparam();
 	param.allowed = 'fau.bonds';
-	testcase(name,geom,param);
+	load fau-bench.mat bench
+	testcase(name,geom,param,bench,'intro');
 end
 
 function acetic()
 	name = 'acetic acid';
 	geom = car2geom('acetic.vasp');
 	param = setparam();
-	testcase(name,geom,param);
+	load acetic-bench.mat bench
+	testcase(name,geom,param,bench,'intro');
 end
 
-function testcase(name,geom,param,varargin)
+function testcase(name,geom,param,bench,type)
 	if geom.periodic, arg{2} = diag(geom.abc); end
+	results = {'ok' 'FAIL!'};
+	%param.logfile = [name '.txt'];
 	tic;
 	fprintf(1,'testing %s ...\n',name);
 	geom = initiate(geom,param);
-	if nargin == 3
-		fprintf(1,'... test finished\n');
-	else
-		while true
-			arg{1} = geom.xyz;
-			[energy.E,energy.g] = morse(arg{:});
-			[geom,state] = berny(geom,energy);
-			if state, break, end
-		end
-		diff = abs(varargin{1}-energy.E);
-		if diff < 1e-6
-			result = 'ok';
-		else
-			result = 'FAIL!';
-		end
-		fprintf(1,'... energy diff is %.3e: %s\n',diff,result);
+	switch type
+		case 'intro'
+			Gi = bernyintro(geom);
+			diff = norm(svd(Gi)-bench);
+			what = 'generalized inverse';
+		case 'berny'
+			geomname = [name '.xyz'];
+			if exist(geomname,'file'), delete(geomname), end
+			while true
+				%writeX(geom,geomname);
+				arg{1} = geom.xyz;
+				[energy.E,energy.g] = morse(arg{:});
+				[geom,state] = berny(geom,energy);
+				if state, break, end
+			end
+			diff = abs(bench-energy.E);
+			what = 'energy';
 	end
+	failed = diff > 1e-6;
+	fprintf(1,'... %s diff is %.3e: %s\n',...
+		what,diff,results{failed+1});
 	toc;
 	fprintf(1,'\n');
-	delete workspace.mat
+	delete berny.mat
 end

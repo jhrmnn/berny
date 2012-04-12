@@ -1,51 +1,48 @@
-% AWFUL, TO BE POLISHED
+% transforms step in internals into cartesians. 12/04/10
 
-function [x,q] = red2car(q,ind,geom)
+function [xyz,q] = red2car(dq,q,Bi,geom,coords,symm)
 	global bohr
-	if geom.periodic
-		abc = geom.abc;
-	else
-		abc = eye(3);
-	end
-	x = geom.xyz;
+	xyz = geom.xyz;
 	n = geom.n;
-	dq = q.total;
-	q = q.now;
-	qtarget = q+dq;
-	i = 0;
+	
+	thre = 1e-6;
+	thre2 = 1e-14;
+	maxit = 200;
 	err = rms(dq);
-	thre = 1e-7;
-	maxrms = 0.01;
-	maxit = 10000;
-	while true % break in the loop
-		xlast = x;
-		qlast = q;
-		if rms(dq) > maxrms
-			Q = maxrms/rms(dq);
-		else
-			Q = 1;
-		end
-		B = Bmat(geom,ind);
-		x = x(1:n,:)+Q*bohr*reshape(llsqr(size(B,1),size(B,2),B,dq,0,1e-9,1e-9,1e8,maxit,0),3,n)'; % iteration step
-		q = internals(struct('xyz',x,'abc',abc,'periodic',geom.periodic),ind);
-    a = find(abs(correct(q-qlast))>2);
-    q(a)=q(a)-pi*sign(correct(q(a)-qlast(a)));
-		dq = correct(qtarget-q); % new step in internals
-		errlast = err;
-		err = rms(dq(abs(correct(q-qlast))<pi-3*maxrms));
+	qtarget = q+dq;
+	wasrecalc = false;
+	
+	i = 0;
+	while true
 		i = i+1;
-		if err < thre
-			print('Perfect transformation in %i iterations: rms(dq)=%g, max(abs(dq))=%g\n',i,err,max(abs(dq)));
+		geom.xyz = xyz+bohr*reshape(Bi*dq,3,n)';
+		geom.xyz = symmetrize(geom,symm);
+		qnew = internals(geom,coords);
+		dqnew = correct(qtarget-qnew);
+		errnew = rms(dqnew);
+		if errnew > err+thre2 && ~wasrecalc
+			geom.xyz = xyz;
+			B = Bmat(geom,coords);
+			Bi = B'*ginv(B*B')';
+			wasrecalc = true;
+			i = i-1;
+			continue
+		end
+		wasrecalc = false;
+		dx = rms(geom.xyz-xyz);
+		xyz = geom.xyz;
+		q = qnew;
+		dq = dqnew;
+		err = errnew;
+		if dx < thre
+			msg = 'Perfect transformation to cartesian in %i iterations';
 			break
-		elseif i > 1
-			if errlast-err < thre
-				print('Transformation ceases to improve after %i iterations: rms(dq)=%g, max(abs(dq))=%g\n',i,errlast,max(abs(correct(qtarget-qlast))));
-				if errlast < err
-					x = xlast;
-					q = qlast;
-				end
-				break
-			end
+		end
+		if i >= maxit
+			msg = 'Transformation to cartesian terminated after %ith iteration';
+			break
 		end
 	end
+	print(msg,i);
+	print('* RMS(dx): %.3g, RMS(dq): %.3g',dx,err);
 end

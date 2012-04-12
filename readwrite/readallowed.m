@@ -1,7 +1,8 @@
+% reads file with specification of allowed bonds. 12/04/12
+
 function allowed = readallowed(filename)
 	if isempty(filename)
-		allowed = [];
-		return
+		allowed = [];	return
 	end
 	fid = fopen(filename,'r');
 	allowed = struct('types',[],'elems',[],'atoms',[]);
@@ -10,8 +11,8 @@ function allowed = readallowed(filename)
 	while ~feof(fid)
 		a = fscanf(fid,'%s',1);
 		b = fscanf(fid,'%s',1);
-		A = str2num(a);
-		B = str2num(b);
+		A = sscanf(a,'%i');
+		B = sscanf(b,'%i');
 		if isempty(A)
 			if isempty(B)
 				allowed.types{itypes}{1} = element(a);

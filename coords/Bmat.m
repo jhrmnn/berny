@@ -6,10 +6,11 @@ function B = Bmat(geom,ind)
 	m = size(ind,1);
 	B = zeros(m,3*n);
 	if geom.periodic
-		xyz = copycell(geom.xyz,geom.abc,[-1 1; -1 1; -1 1])/bohr;
+		xyz = copycell(geom.xyz,geom.abc,[-1 1; -1 1; -1 1]);
 	else
 		xyz = geom.xyz;
 	end
+	xyz = xyz/bohr;
 	for i = 1:m
 		if ind(i,3) == 0
 			[void,grad] = r(xyz(ind(i,1:2),:),'grad');

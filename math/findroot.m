@@ -7,12 +7,17 @@ function x = findroot(f,lim)
 		d = d/2; % find d so that lim-d > 0
 	end
 	x = lim-d; % initial guess
-	dx = 1e-8; % step for numerical derivative
-	thre = 1e-12; % threshold for root accuracy
-	while abs(f(x)) > thre
-		fx = f(x);
+	dx = 1e-10; % step for numerical derivative
+	
+	fx = f(x);
+	err = abs(fx);
+	while true
 		fxpdx = f(x+dx);
 		dxf = (fxpdx-fx)/dx; % derivative
 		x = x-fx/dxf; % update
+		fx = f(x);
+		errnew = abs(fx);
+		if errnew >= err, break, end
+		err = errnew;
 	end
 end

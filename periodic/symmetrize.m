@@ -1,4 +1,8 @@
 function xyz = symmetrize(geom,symm)
+	if isempty(symm)
+		xyz = geom.xyz;
+		return
+	end
 	xyz = geom.xyz/geom.abc; % transform into fractionals
 	n = size(xyz,1); % number of atoms
 	thre = 0.05./sqrt(sum(geom.abc.^2,2))'; % symmetry detection
@@ -15,7 +19,7 @@ function xyz = symmetrize(geom,symm)
 	end
 	xyz = xyz*geom.abc; % transforms back to cartesian
 	diff = sqrt(sum((geom.xyz-xyz).^2,2));
-	print('Symmetrization change. Max: %g, RMS: %g\n',...
+	print('Symmetrization change. Max: %g, RMS: %g',...
 					max(diff),rms(diff));
 end
 

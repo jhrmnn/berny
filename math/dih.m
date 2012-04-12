@@ -12,11 +12,8 @@ function [Phi,grad] = dih(xyz,grad)
 		sgn = 1;
 	end
 	sc = a1*a2'/norm(a1)/norm(a2);
-	if sc <= -1
-		sc = -1;
-	elseif sc >= 1
-		sc = 1;
-	end
+	sc(sc<=-1) = -1;
+	sc(sc>=1) = 1;
 	Phi = acos(sc)*sgn;
 	if nargin == 1, return, end
 	grad = zeros(4,3);
@@ -39,14 +36,16 @@ function [Phi,grad] = dih(xyz,grad)
 		grad(3,:) = ((1+B)/norm(a2)-A/norm(a1))*g;
 		grad(2,:) = -((1-A)/norm(a1)+B/norm(a2))*g;
 	else
-		grad(1,:) = cot(Phi)*a1/norm(a1)^2 - a2/(norm(a1)*norm(a2)*sin(Phi));
-		grad(4,:) = cot(Phi)*a2/norm(a2)^2 - a1/(norm(a1)*norm(a2)*sin(Phi));
+		grad(1,:) = cot(Phi)*a1/norm(a1)^2 ...
+			-a2/(norm(a1)*norm(a2)*sin(Phi));
+		grad(4,:) = cot(Phi)*a2/norm(a2)^2 ...
+			-a1/(norm(a1)*norm(a2)*sin(Phi));
 		A = v1*ew'/norm(w);
 		B = v2*ew'/norm(w);
-		grad(3,:) = ((1+B)*a1+A*a2)/(norm(a1)*norm(a2)*sin(Phi)) ...
-			- cot(Phi)*((1+B)*a2/norm(a2)^2+A*a1/norm(a1)^2);
-		grad(2,:) = ((1-A)*a2-B*a1)/(norm(a1)*norm(a2)*sin(Phi)) ...
-			- cot(Phi)*((1-A)*a1/norm(a1)^2-B*a2/norm(a2)^2);
+		grad(3,:) = ((1+B)*a1+A*a2)/(norm(a1)*norm(a2)*sin(Phi))...
+			-cot(Phi)*((1+B)*a2/norm(a2)^2+A*a1/norm(a1)^2);
+		grad(2,:) = ((1-A)*a2-B*a1)/(norm(a1)*norm(a2)*sin(Phi))...
+			-cot(Phi)*((1-A)*a1/norm(a1)^2-B*a2/norm(a2)^2);
 	end
 end
 
