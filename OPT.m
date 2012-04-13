@@ -10,7 +10,7 @@ if length(arg) < 4
 end
 [optfile,queue,ncpu,memory] = deal(arg{:});
 dir = mfilename('fullpath');
-dir(end-length('frontend/OPT')+1:end) = [];
+dir(end-length('OPT')+1:end) = [];
 funcs = {'core' 'coords'  'math' 'periodic' 'frontend' 'readwrite'};
 p = '';
 for i = 1:length(funcs)
