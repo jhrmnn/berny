@@ -5,8 +5,9 @@ function geom = initiate(geom,param)
 	global bohr fid steps
 	param.threshold = getthreshold(param);
 	bohr = 0.52917720859;
-	fid = fopen(param.logfile,'w');
+	fid = param.fid;
 	steps = 0;
+	print('');
 	trust = param.trust;
 	allowed = readallowed(param.allowed); % read allowed bond types
 	symm = readsymm(param.symmetry); % read symmetry definition
