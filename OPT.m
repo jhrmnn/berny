@@ -27,7 +27,7 @@ fprintf(fid,[...
 fclose(fid);
 param = setparam(optfile);
 if exist('qout','dir')
-	delete qout/*
+	system('rm qout/*');
 else
 	mkdir qout
 end

@@ -7,7 +7,6 @@ function geom = initiate(geom,param)
 	bohr = 0.52917720859;
 	fid = param.fid;
 	steps = 0;
-	print('');
 	trust = param.trust;
 	allowed = readallowed(param.allowed); % read allowed bond types
 	symm = readsymm(param.symmetry); % read symmetry definition

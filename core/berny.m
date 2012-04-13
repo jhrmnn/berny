@@ -4,7 +4,6 @@ function [geom,state] = berny(geom,energy)
 	global param fid
 	load berny.mat q w e g H trust steps coords symm param
 	steps = steps+1;
-	print('');
 	e.now = energy.E; % energy
 	g.now = reshape(energy.g',3*geom.n,1); % cartesian gradient
 	print('Energy: %.12f',e.now,'always');

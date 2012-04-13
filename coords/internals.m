@@ -4,10 +4,11 @@ function [q,w] = internals(geom,coords,rho)
 	global bohr
 	m = size(coords,1);
 	if geom.periodic
-		xyz = copycell(geom.xyz,geom.abc,[-1 1; -1 1; -1 1])/bohr;
+		xyz = copycell(geom.xyz,geom.abc,[-1 1; -1 1; -1 1]);
 	else
 		xyz = geom.xyz;
 	end
+	xyz = xyz/bohr;
 	q = zeros(m,1);
 	for i = 1:m
 		if coords(i,3) == 0

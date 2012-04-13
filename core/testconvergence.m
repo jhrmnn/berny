@@ -26,6 +26,6 @@ function state = testconvergence(g,q,trust)
 	end
 	state = all(isok);
 	if state
-		print('All criteria matched');
+		print('* All criteria matched');
 	end
 end

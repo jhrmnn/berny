@@ -16,17 +16,16 @@ function driver(optname)
 	fprintf(fid,'Time: %s\n',datestr(now()));
 	geomname = [optname '.xyz'];
 	param.fid = fid;
-	tic;
-	fprintf(1,'starting %s ...\n',optname); octfflush(1);
 	geom = initiate(geom,param);
 	for i = 1:param.maxsteps
 		writeX(geom,geomname);
-		energy = getenergy(param);
+		energy = getenergy(geom,param);
+		t = time();
+		fprintf(param.fid,'entering berny ...\n'); octfflush(1);
 		[geom,state] = berny(geom,energy);
+		fprintf(param.fid,'... exiting berny after %i seconds\n',round(time()-t)); octfflush(1);
 		if state, break, end
 	end
-	fprintf(1,'... %s finished in %i steps\n',optname,i);
-	toc; octfflush(1);
 	delete berny.mat
 end
 
@@ -41,12 +40,11 @@ function energy = gaussian(geom,param)
 	dir = pwd();
 	id = getenv('JOB_ID');
 	scr = head(id,param.program);
-	writeX(geom,'opt.xyz');
-	copyfile('opt.xyz',scr);
 	copyfile(param.input,scr);
 	cd(scr);
+	writeX(geom,'opt.xyz');
 	fprintf(param.fid,'entering Gaussian ...\n');
-	octflush(param.fid);
+	octfflush(param.fid);
 	t = time();
 	fidxyz = fopen('opt.xyz');
 	fidinput = fopen(param.input,'a');
@@ -61,7 +59,7 @@ function energy = gaussian(geom,param)
 	system(sprintf('g09 < %s > g09.log',param.input));
 	fprintf(param.fid,...
 		'... exiting Gaussian after %i seconds\n',round(time()-t));
-	octflush(param.fid);
+	octfflush(param.fid);
 	s = fileread('g09.log');
 	E = regexp(s,'EUMP2 = +(-?\d+\.\d*)D([+-]\d*)','tokens');
 	if isempty(E)
