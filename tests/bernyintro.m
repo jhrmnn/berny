@@ -7,5 +7,5 @@ function Gi = bernyintro(geom)
 	B = Bmat(geom,coords);
 	G = B*B'; 
 	Gi = ginv(G);
-	fclose(fid);
+	if fid > 0, fclose(fid); end
 end

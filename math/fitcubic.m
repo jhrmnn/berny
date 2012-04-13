@@ -16,9 +16,9 @@ function [x,y] = fitcubic(y0,y1,g0,g1)
 	if isreal(r) % has extrema?
 		r = num2cell(sort(r));
 		if p(1) > 0
-			[max,x] = r{:};
+			[max,x] = deal(r{:});
 		else
-			[x,max] = r{:};
+			[x,max] = deal(r{:});
 		end
 		if (max > 0 && max < 1) || abs(x-0.5) > abs(max-0.5)
 			[x,y] = deal(NaN);
