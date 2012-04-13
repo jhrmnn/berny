@@ -9,9 +9,10 @@ function driver(optname)
 			geom = car2geom('POSCAR');
 		otherwise
 			geom = readX(param.geometry);
+			geom.periodic = false;
 	end
 	[stat,node] = system('uname -n');
-	fprintf(fid,'Node: %s\n',node);
+	fprintf(fid,'Node: %s',node);
 	fprintf(fid,'Time: %s\n',datestr(now()));
 	geomname = [optname '.xyz'];
 	param.fid = fid;

@@ -11,5 +11,6 @@ function geom = readX(filename)
 		geom.atoms(i) = element(fscanf(fid,'%s',1));
 		geom.xyz(i,:) = fscanf(fid,'%g',3)';
 	end
+	geom.n = n;
 	fclose(fid);
 end
