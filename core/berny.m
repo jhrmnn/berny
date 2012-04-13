@@ -41,7 +41,7 @@ function [geom,state] = berny(geom,energy)
 	state = testconvergence(proj*g.i,q,trust);
 	if state
 		print('Optimization ended after %i steps',steps);
-		fclose(fid);
+		if fid > 0, fclose(fid); end
 		return
 	end
 	if steps == 1 || e.now < e.best

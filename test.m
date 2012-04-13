@@ -59,7 +59,7 @@ end
 function testcase(name,geom,param,bench,type)
 	if geom.periodic, arg{2} = diag(geom.abc); end
 	results = {'ok' 'FAIL!'};
-	param.logfile = [name '.txt'];
+	%param.logfile = [name '.txt'];
 	tic;
 	fprintf(1,'testing %s ...\n',name); octfflush(1);
 	geom = initiate(geom,param);
