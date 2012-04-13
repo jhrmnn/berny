@@ -1,6 +1,7 @@
 % tests for convergence criteria. 12/04/10
 
-function state = testconvergence(g,q,threshold,trust)
+function state = testconvergence(g,q,trust)
+	global param
 	onsphere = abs(norm(q.dqq)-trust)<1e-10;
 	names = {'Gradient RMS' 'Step RMS'...
 		'Gradient maximum' 'Step maximum'};
@@ -12,11 +13,11 @@ function state = testconvergence(g,q,threshold,trust)
 		flags([2 4]) = true;
 	end
 	print('Convergence criteria:');
-	isok = values < threshold;
+	isok = values < param.threshold;
 	for i = 1:4
 		if ~flags(i), continue, end
 		print('* %s is: %.3g, threshold: %.3g, %s',...
-			names{i},values(i),threshold(i),results{isok(i)+1});
+			names{i},values(i),param.threshold(i),results{isok(i)+1});
 	end
 	isok = isok(flags);
 	if onsphere

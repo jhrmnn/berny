@@ -1,7 +1,8 @@
 % performs one step of Berny algorithm. 12/04/12
 
 function [geom,state] = berny(geom,energy)
-	load berny.mat q w e g H trust steps coords symm threshold
+	global param
+	load berny.mat q w e g H trust steps coords symm param
 	steps = steps+1;
 	print('');
 	e.now = energy.E; % energy
@@ -37,7 +38,7 @@ function [geom,state] = berny(geom,energy)
 		rms(q.dq),max(abs(q.dq)));
 	[geom.xyz,q.new] = red2car(q.dq,q.now,Bi,geom,coords,symm);
 	q.dq = correct(q.new-q.now);
-	state = testconvergence(proj*g.i,q,threshold,trust);
+	state = testconvergence(proj*g.i,q,trust);
 	if state
 		print('Optimization ended after %i steps',steps);
 		return

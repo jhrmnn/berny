@@ -3,11 +3,11 @@
 
 function geom = initiate(geom,param)
 	global bohr fid steps
+	param.threshold = getthreshold(param);
 	bohr = 0.52917720859;
 	fid = fopen(param.logfile,'w');
 	steps = 0;
 	trust = param.trust;
-	threshold = getthreshold(param);
 	allowed = readallowed(param.allowed); % read allowed bond types
 	symm = readsymm(param.symmetry); % read symmetry definition
 	geom.xyz = symmetrize(geom,symm);
@@ -17,7 +17,7 @@ function geom = initiate(geom,param)
 	                     % evaluate coordinates and their weights
 	[e,g] = deal([]); % energy and gradient
 	H = hessian(rho,coords); % initial hessian guess
-	save -v6 berny.mat q w e g H trust steps coords symm threshold
+	save -v6 berny.mat q w e g H trust steps coords symm param
 end
 
 function y = getthreshold(param)
