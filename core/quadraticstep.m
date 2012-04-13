@@ -1,8 +1,12 @@
 % makes trust-constrained NR step. 12/04/12
 
 function [dq,deP] = quadraticstep(g,H,w,trust)
-	%gw = w*g; % weigh gradient
-	gw = g;
+	global param
+	if param.weigh
+		gw = w*g; % weigh gradient
+	else
+		gw = g;
+	end
 	ev = eig((H+H')/2);
 	rfo = [H gw; gw' 0];
 	[V,D] = eig((rfo+rfo')/2);

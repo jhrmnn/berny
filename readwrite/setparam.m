@@ -14,6 +14,7 @@ function param = defaults()
 	param.steprms = 1.2e-3;
 	param.maxsteps = 100;
 	param.trust = 0.3;
+	param.weigh = 1;
 	param.allowed = '';
 	param.symmetry = '';
 	param.logfile = '';
