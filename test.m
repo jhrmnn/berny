@@ -5,7 +5,7 @@ function test()
 	try
 		h3molecule();
 		hcrystal();
-		fau();
+% 		fau();
 		acetic();
 	catch % octave doesn't know "catch ME"
 		delete berny.mat
@@ -35,33 +35,33 @@ function hcrystal()
 	bench = morse(geom.xyz,diag(geom.abc));
 	geom.xyz(:,1) = 0.75/2*[1; -1.1];
 	param = setparam();
-	param.symmetry = 'h.symm';
+	param.symmetry = 'tests/h.symm';
 	testcase(name,geom,param,bench,'berny');
 end
 
 function fau()
 	name = 'FAU';
-	geom = car2geom('fau.vasp');
+	geom = car2geom('tests/fau.vasp');
 	param = setparam();
-	param.allowed = 'fau.bonds';
-	load fau-bench.mat bench
+	param.allowed = 'tests/fau.bonds';
+	load tests/fau-bench.mat bench
 	testcase(name,geom,param,bench,'intro');
 end
 
 function acetic()
 	name = 'acetic acid';
-	geom = car2geom('acetic.vasp');
+	geom = car2geom('tests/acetic.vasp');
 	param = setparam();
-	load acetic-bench.mat bench
+	load tests/acetic-bench.mat bench
 	testcase(name,geom,param,bench,'intro');
 end
 
 function testcase(name,geom,param,bench,type)
 	if geom.periodic, arg{2} = diag(geom.abc); end
 	results = {'ok' 'FAIL!'};
-	%param.logfile = [name '.txt'];
+	param.logfile = [name '.txt'];
 	tic;
-	fprintf(1,'testing %s ...\n',name);
+	fprintf(1,'testing %s ...\n',name); octfflush(1);
 	geom = initiate(geom,param);
 	switch type
 		case 'intro'
@@ -84,7 +84,7 @@ function testcase(name,geom,param,bench,type)
 	failed = diff > 1e-6;
 	fprintf(1,'... %s diff is %.3e: %s\n',...
 		what,diff,results{failed+1});
-	toc;
+	toc; octfflush(1);
 	fprintf(1,'\n');
 	delete berny.mat
 end

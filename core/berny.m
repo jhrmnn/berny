@@ -1,7 +1,7 @@
 % performs one step of Berny algorithm. 12/04/12
 
 function [geom,state] = berny(geom,energy)
-	global param
+	global param fid
 	load berny.mat q w e g H trust steps coords symm param
 	steps = steps+1;
 	print('');
@@ -41,6 +41,7 @@ function [geom,state] = berny(geom,energy)
 	state = testconvergence(proj*g.i,q,trust);
 	if state
 		print('Optimization ended after %i steps',steps);
+		fclose(fid);
 		return
 	end
 	if steps == 1 || e.now < e.best

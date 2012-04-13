@@ -7,11 +7,10 @@ function print(s,varargin)
 		% if last argument is 'always', print anyway
 		varargin(end) = [];
 		fprintf(1,s,steps,varargin{:});
+		octfflush(1);
 	end
 	if fid > 0
 		fprintf(fid,s,steps,varargin{:});
-		if ~exist('matlabroot','builtin')
-			fflush(fid); % force octave to flush buffer
-		end
+		octfflush(fid);
 	end
 end

@@ -19,16 +19,20 @@ function [dihs,idih] = makedih(dihs,idih,c,bond,xyz,C)
 	end
 	lin1 = ang1>pi-1e-3;
 	lin2 = ang2>pi-1e-3;
+	islin1 = false;
+	islin2 = false;
 	ind1 = 1:n1;
 	ind2 = 1:n2;
 	if any(lin1)
 		if sum(lin1) > 1, error('This si weird'); end
 		lin1 = find(lin1,1);
+		islin1 = true;
 		ind1(lin1) = [];
 	end
 	if any(lin2)
 		if sum(lin2) > 1, error('This is weird'); end
 		lin2 = find(lin2,1);
+		islin2 = true;
 		ind2(lin2) = [];
 	end
 	if c(1) < c(end)
@@ -51,11 +55,11 @@ function [dihs,idih] = makedih(dihs,idih,c,bond,xyz,C)
 		end
 	end
 	if length(c) >= 4, return, end
-	if isnumeric(lin1) && islogical(lin2)
+	if islin1 && ~islin2
 		c = [neigh1(lin1) c];
 		[dihs,idih] = makedih(dihs,idih,c,bond,xyz,C);
 	end
-	if isnumeric(lin2) && islogical(lin1)
+	if islin2 && ~islin1
 		c = [c neigh2(lin2)];
 		[dihs,idih] = makedih(dihs,idih,c,bond,xyz,C);
 	end
