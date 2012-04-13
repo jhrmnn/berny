@@ -20,7 +20,6 @@ function h3molecule()
 	geom.xyz = [0 0 0; 1 1 0; 2 -1 1];
 	geom.periodic = false;
 	param = setparam();
-	param.trust = 0.01;
 	param.stepmax = 1e-5;
 	testcase(name,geom,param,-3,'berny');
 end
