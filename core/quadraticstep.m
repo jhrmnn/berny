@@ -3,10 +3,14 @@
 function [dq,deP] = quadraticstep(g,H,w,trust)
 	%gw = w*g; % weigh gradient
 	gw = g;
-	dq = -H\gw;
-	ev = eig((H+H')/2);
-	if ev(1) < 0 || norm(dq) > trust
+	%dq = -H\gw;
+	%ev = eig((H+H')/2);
+	rfo = [H gw; gw' 0];
+	[V,D] = eig((rfo+rfo')/2);
+	dq = V(1:end-1,1)/V(end,1);
+	if norm(dq) > trust
 		steplength = @(l)(norm((l*eye(size(H))-H)\gw)-trust);
+		ev = eig((H+H')/2);
 		l = findroot(steplength,ev(1)); % minimization on sphere
 		dq = (l*eye(size(H))-H)\gw;
 		print('Minimization on sphere:');
