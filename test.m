@@ -6,7 +6,7 @@ function test()
 		h3molecule();
 		hcrystal();
 % 		fau();
-		acetic();
+% 		acetic();
 	catch % octave doesn't know "catch ME"
 		delete berny.mat
 		rethrow(lasterror);
@@ -59,7 +59,7 @@ end
 function testcase(name,geom,param,bench,type)
 	if geom.periodic, arg{2} = diag(geom.abc); end
 	results = {'ok' 'FAIL!'};
-	%param.logfile = [name '.txt'];
+	param.logfile = [name '.txt'];
 	param.fid = fopen(param.logfile,'w');
 	tic;
 	fprintf(1,'testing %s ...\n',name); octfflush(1);
