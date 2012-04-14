@@ -21,7 +21,7 @@ function geom = car2geom(filename)
 	fclose(fid);
 	
 	if lower(type(1)) == 'd'
-		xyz = xyz*abc; % transforms to cartesians
+		xyz = xyz*abc; % transform to cartesians
 	end
 	atoms = zeros(n,1);
 	k = 1;
