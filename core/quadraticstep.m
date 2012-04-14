@@ -1,24 +1,17 @@
 % makes trust-constrained NR step. 12/04/12
 
 function [dq,deP] = quadraticstep(g,H,w,trust)
-	global param
-	if param.weigh
-		gw = w*g; % weigh gradient
-		print('Gradient weighed');
-	else
-		gw = g;
-	end
 	ev = eig((H+H')/2);
-	rfo = [H gw; gw' 0];
+	rfo = [H g; g' 0];
 	[V,D] = eig((rfo+rfo')/2);
 	dq = V(1:end-1,1)/V(end,1);
 	l = D(1);
 	if norm(dq) <= trust
 		print('Pure RFO step was performed:');
 	else
-		steplength = @(l)(norm((l*eye(size(H))-H)\gw)-trust);
+		steplength = @(l)(norm((l*eye(size(H))-H)\g)-trust);
 		l = findroot(steplength,ev(1)); % minimization on sphere
-		dq = (l*eye(size(H))-H)\gw;
+		dq = (l*eye(size(H))-H)\g;
 		print('Minimization on sphere was performed:');
 	end
 	print('* Number of negative eigenvalues: %i',...
