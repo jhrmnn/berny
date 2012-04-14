@@ -1,16 +1,15 @@
 % calculates Wilson matrix. 12/04/09
 
 function B = Bmat(geom,ind)
-	global bohr
+	global angstrom
 	n = geom.n;
 	m = size(ind,1);
 	B = zeros(m,3*n);
 	if geom.periodic
-		xyz = copycell(geom.xyz,geom.abc,[-1 1; -1 1; -1 1]);
+		xyz = copycell(geom.xyz,geom.abc,[-1 1; -1 1; -1 1])*angstrom;
 	else
-		xyz = geom.xyz;
+		xyz = geom.xyz*angstrom;
 	end
-	xyz = xyz/bohr;
 	for i = 1:m
 		if ind(i,3) == 0
 			[void,grad] = r(xyz(ind(i,1:2),:),'grad');

@@ -1,14 +1,13 @@
 % calculates internal coordinates. 12/04/09
 
 function [q,w] = internals(geom,coords,rho)
-	global bohr
+	global angstrom
 	m = size(coords,1);
 	if geom.periodic
-		xyz = copycell(geom.xyz,geom.abc,[-1 1; -1 1; -1 1]);
+		xyz = copycell(geom.xyz,geom.abc,[-1 1; -1 1; -1 1])*angstrom;
 	else
-		xyz = geom.xyz;
+		xyz = geom.xyz*angstrom;
 	end
-	xyz = xyz/bohr;
 	q = zeros(m,1);
 	for i = 1:m
 		if coords(i,3) == 0

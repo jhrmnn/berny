@@ -56,6 +56,7 @@ function acetic()
 end
 
 function testcase(name,geom,param,bench,type)
+	global angstrom
 	if geom.periodic, arg{2} = diag(geom.abc); end
 	results = {'ok' 'FAIL!'};
 	param.logfile = [name '.txt'];
@@ -75,6 +76,7 @@ function testcase(name,geom,param,bench,type)
 				%writeX(geom,geomname);
 				arg{1} = geom.xyz;
 				[energy.E,energy.g] = morse(arg{:});
+				energy.g = energy.g/angstrom;
 				[geom,state] = berny(geom,energy);
 				if state, break, end
 			end

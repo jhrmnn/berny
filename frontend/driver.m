@@ -38,7 +38,6 @@ function energy = getenergy(geom,param)
 end
 
 function energy = gaussian(geom,param)
-	global bohr
 	dir = pwd();
 	id = getenv('JOB_ID');
 	scr = head(id,param.program);
@@ -77,7 +76,7 @@ function energy = gaussian(geom,param)
 	energy.g = zeros(n,3);
 	for i = 1:n
 		for j = 1:3
-			energy.g(i,j) = -str2double(g{3*(i-1)+j}{1})/bohr;
+			energy.g(i,j) = -str2double(g{3*(i-1)+j}{1});
 		end
 	end
 	cd(dir);

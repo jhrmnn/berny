@@ -2,9 +2,9 @@
 % 12/04/10
 
 function geom = initiate(geom,param)
-	global bohr fid steps
+	global angstrom fid steps
 	param.threshold = getthreshold(param);
-	bohr = 0.52917720859;
+	angstrom = 1.88972613288;
 	fid = param.fid;
 	steps = 0;
 	trust = param.trust;
