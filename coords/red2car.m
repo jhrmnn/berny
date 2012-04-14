@@ -1,7 +1,7 @@
 % transforms step in internals into cartesians. 12/04/10
 
 function [xyz,q] = red2car(dq,q,Bi,geom,coords,symm)
-	global bohr
+	global angstrom
 	xyz = geom.xyz;
 	n = geom.n;
 	
@@ -15,7 +15,7 @@ function [xyz,q] = red2car(dq,q,Bi,geom,coords,symm)
 	i = 0;
 	while true
 		i = i+1;
-		geom.xyz = xyz+bohr*reshape(Bi*dq,3,n)';
+		geom.xyz = xyz+reshape(Bi*dq,3,n)'/angstrom;
 		geom.xyz = symmetrize(geom,symm);
 		qnew = internals(geom,coords);
 		dqnew = correct(qtarget-qnew);

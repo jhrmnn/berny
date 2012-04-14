@@ -76,7 +76,6 @@ function testcase(name,geom,param,bench,type)
 				%writeX(geom,geomname);
 				arg{1} = geom.xyz;
 				[energy.E,energy.g] = morse(arg{:});
-				energy.g = energy.g/angstrom;
 				[geom,state] = berny(geom,energy);
 				if state, break, end
 			end
