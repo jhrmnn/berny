@@ -4,6 +4,7 @@ function [dq,deP] = quadraticstep(g,H,w,trust)
 	global param
 	if param.weigh
 		gw = w*g; % weigh gradient
+		print('Gradient weighed');
 	else
 		gw = g;
 	end
