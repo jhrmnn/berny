@@ -3,9 +3,9 @@
 function test()
 	addpath core coords math periodic readwrite tests
 	try
-		h3molecule();
-		hcrystal();
-% 		fau();
+% 		h3molecule();
+% 		hcrystal();
+		fau();
 % 		acetic();
 	catch % octave doesn't know "catch ME"
 		delete berny.mat
@@ -56,36 +56,35 @@ function acetic()
 end
 
 function testcase(name,geom,param,bench,type)
-	global angstrom
 	if geom.periodic, arg{2} = diag(geom.abc); end
 	results = {'ok' 'FAIL!'};
-	param.logfile = [name '.txt'];
-	param.fid = fopen(param.logfile,'w');
-	tic;
+	%param.logfile = [name '.txt']; % logfile
+	param.fid = fopen(param.logfile,'w'); % open logfile
+	tic; % start clock
 	fprintf(1,'testing %s ...\n',name); octfflush(1);
-	geom = initiate(geom,param);
+	geom = initiate(geom,param); % prepare stuff
 	switch type
-		case 'intro'
+		case 'intro' % if only B matrix to calculate
 			Gi = bernyintro(geom);
 			diff = norm(svd(Gi)-bench);
-			what = 'generalized inverse';
+			what = 'generalized inverse'; % what is benchmarked
 		case 'berny'
-			geomname = [name '.xyz'];
+			geomname = [name '.xyz']; % geom history
 			if exist(geomname,'file'), delete(geomname), end
 			while true
-				%writeX(geom,geomname);
+				%writeX(geom,geomname); % write geometry
 				arg{1} = geom.xyz;
-				[energy.E,energy.g] = morse(arg{:});
-				[geom,state] = berny(geom,energy);
+				[energy.E,energy.g] = morse(arg{:}); % obtain energy
+				[geom,state] = berny(geom,energy); % perform berny
 				if state, break, end
 			end
 			diff = abs(bench-energy.E);
 			what = 'energy';
 	end
-	failed = diff > 1e-6;
+	failed = diff > 1e-6; % failed?
 	fprintf(1,'... %s diff is %.3e: %s\n',...
 		what,diff,results{failed+1});
-	toc; octfflush(1);
+	toc; octfflush(1); % stop clock
 	fprintf(1,'\n');
 	delete berny.mat
 end

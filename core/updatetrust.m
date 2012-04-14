@@ -11,6 +11,5 @@ function trust = updatetrust(de,deP,dq,trust)
 	elseif r > 0.75 && abs(norm(dq)-trust) < 1e-10
 		trust = 2*trust;
 	end
-	print('Trust radius: %.3g',trust);
-	print('* Fletcher''s parameter: %.3g',r);
+	print('Trust update: Fletcher''s parameter: %.3g',r);
 end

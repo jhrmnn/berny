@@ -24,9 +24,9 @@ function [C,frags] = conn(C)
 			end
 		end
 	end
-	frags = cell(1,ifrag);
+	frags = cell(1,ifrag); % fragments
 	for i = 1:ifrag
-		frags{i} = find(found==i);
-		C(frags{i},frags{i}) = true;
+		frags{i} = find(found==i); % define fragments
+		C(frags{i},frags{i}) = true; % set connections
 	end
 end

@@ -18,10 +18,10 @@ function B = Bmat(geom,ind)
 		else
 			[void,grad] = dih(xyz(ind(i,1:4),:),'grad');
 		end
-		indsub = mod(ind(i,1:4)-1,n)+1; % index in base cell
-		k = size(grad,1);
+		indsub = mod(ind(i,1:4)-1,n)+1; % index of atom in base cell
+		k = size(grad,1); % bond, angle or dihedral
 		for j = 1:k
-			pos = 3*(indsub(j)-1)+1;
+			pos = 3*(indsub(j)-1)+1; % column position in B matrix
 			B(i,pos:pos+2) = B(i,pos:pos+2)+grad(j,:);
 		end
 	end

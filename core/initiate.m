@@ -3,14 +3,14 @@
 
 function geom = initiate(geom,param)
 	global angstrom fid steps
-	param.threshold = getthreshold(param);
-	angstrom = 1.88972613288;
-	fid = param.fid;
-	steps = 0;
-	trust = param.trust;
+	angstrom = 1.88972613288; % 1 angstrom in a.u.
+	fid = param.fid; % set fid of logfile
+	steps = 0; % set steps counter
+	param.threshold = getthreshold(param); % extract thresholds
+	trust = param.trust; % initial trust radius
 	allowed = readallowed(param.allowed); % read allowed bond types
 	symm = readsymm(param.symmetry); % read symmetry definition
-	geom.xyz = symmetrize(geom,symm);
+	geom.xyz = symmetrize(geom,symm); % symmetrize geometry
 	[coords,rho] = gencoords(geom,allowed);
 	                    % generate internal redundant coordinates
 	[q.now,w] = internals(geom,coords,rho);

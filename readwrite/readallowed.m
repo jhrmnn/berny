@@ -6,8 +6,9 @@ function allowed = readallowed(filename)
 	end
 	fid = fopen(filename,'r');
 	allowed = struct('types',[],'elems',[],'atoms',[]);
-	itypes = 1;
-	ielems = 1;
+	itypes = 0;
+	ielems = 0;
+	iatoms = 0;
 	while ~feof(fid)
 		a = fscanf(fid,'%s',1);
 		b = fscanf(fid,'%s',1);
@@ -15,16 +16,18 @@ function allowed = readallowed(filename)
 		B = sscanf(b,'%i');
 		if isempty(A)
 			if isempty(B)
-				allowed.types{itypes}{1} = element(a);
-				allowed.types{itypes}{2} = element(b);
 				itypes = itypes+1;
+				allowed.types(itypes,1) = element(a);
+				allowed.types(itypes,2) = element(b);
 			else
-				allowed.elems{ielems}{1} = element(a);
-				allowed.elems{ielems}{2} = B;
 				ielems = ielems+1;
+				allowed.elems(ielems,1) = element(a);
+				allowed.elems(ielems,2) = B;
 			end
 		else
-			allowed.atoms{A} = B;
+			iatoms = iatoms+1;
+			allowed.atoms(iatoms,1) = A;
+			allowed.atoms(iatoms,2) = B;
 		end
 		fgets(fid);
 	end

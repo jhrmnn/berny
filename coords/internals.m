@@ -19,7 +19,7 @@ function [q,w] = internals(geom,coords,rho)
 		end
 	end
 	if nargin > 2
-		w = weights(xyz,q,coords,rho);
+		w = weights(xyz,q,coords,rho); % evalute weights
 	end
 end
 

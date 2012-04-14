@@ -1,10 +1,6 @@
 % generates system of internal coordinates based on standard 
 % covalent radii. 12/04/07
 
-% Mind the terminology: two things are /bonded/ if there is 
-% a bond betwenen them, while two things are /connected/ if
-% there is a chain of bonds that connects them.
-
 function [coords,rho] = gencoords(geom,allowed)
 	if geom.periodic		
 		celldim = [-1 1; -1 1; -1 1];
@@ -25,7 +21,7 @@ function [coords,rho] = gencoords(geom,allowed)
 	dihs = gendihs(bond,xyz,C,bonds);
 	coords = [bonds; angles; dihs];
 	if geom.periodic
-		coords = reduce(coords,geom.n);
+		coords = reduce(coords,geom.n); % erase periodic images
 	end
 	coordanalysis(coords,length(frags));
 	coords = coords(:,1:4);

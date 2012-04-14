@@ -4,14 +4,12 @@ function [xyz,q] = red2car(dq,q,Bi,geom,coords,symm)
 	global angstrom
 	xyz = geom.xyz;
 	n = geom.n;
-	
 	thre = 1e-6;
 	thre2 = 1e-14;
-	maxit = 200;
+	maxit = 20;
 	err = rms(dq);
 	qtarget = q+dq;
 	wasrecalc = false;
-	
 	i = 0;
 	while true
 		i = i+1;

@@ -14,6 +14,7 @@ function [dq,deP] = quadraticstep(g,H,w,trust)
 		dq = (l*eye(size(H))-H)\g;
 		print('Minimization on sphere was performed:');
 	end
+	print('* Trust radius: %.3g',trust);
 	print('* Number of negative eigenvalues: %i',...
 		length(find(ev<0)));
 	print('* Lowest eigenvalue: %.3g',ev(1));
