@@ -39,9 +39,9 @@ function nelm = readnelm()
 	while ~feof(fid)
 		l = fgets(fid);
 		if l(1) == '!', continue, end
-		nelm = regexp(l,'NELM *= *(\d+)','tokens');
-		if ~isempty(nelm)
-			nelm = str2double(nelm{1}{1});
+		snelm = regexp(l,'NELM *= *(\d+)','tokens');
+		if ~isempty(snelm)
+			nelm = str2double(snelm{1}{1});
 			return
 		end
 	end
