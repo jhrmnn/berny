@@ -15,6 +15,7 @@ function driver(optname)
 	fprintf(fid,'Node: %s',node);
 	fprintf(fid,'Time: %s\n',datestr(now()));
 	geomname = [optname '.xyz'];
+	if exist(geomname,'file'), delete(geomname); end
 	param.fid = fid;
 	geom = initiate(geom,param);
 	for i = 1:param.maxsteps
