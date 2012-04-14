@@ -21,6 +21,14 @@ function [scr,run] = head(id,program)
 			vasp = [vasp{1}{1} '-mp' program];
 			putenv('PATH',[getenv('PATH') sep vasp sep mpi]);
 			run = [mpi ' ' vasp '/vasp'];
+		case {'vasp-5.2.12' 'vasp-5.2.12-gamma'...
+				'vasp-5.2.12-vtst' 'vasp-5.2.12-gamma-vtst'}
+			program(1:11) = [];
+			vasp = regexp(grep('VASPDIR=','VASP-5.2.12'),...
+				'VASPDIR=(\S+)','tokens');
+			vasp = [vasp{1}{1} '-mp' program];
+			putenv('PATH',[getenv('PATH') sep vasp sep mpi]);
+			run = [mpi ' ' vasp '/vasp'];
 	end
 end
 
