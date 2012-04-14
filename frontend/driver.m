@@ -6,7 +6,7 @@ function driver(optname)
 	fid = fopen(param.logfile,'w'); % open logfile
 	switch param.program
 		case 'vasp' % if VASP, read POSCAR
-			geom = car2geom('POSCAR');
+			geom = car2geom(param.geometry);
 		otherwise % otherwise read xyz geometry
 			geom = readX(param.geometry);
 			geom.periodic = false;
@@ -32,9 +32,15 @@ function driver(optname)
 end
 
 function energy = getenergy(geom,param)
-	switch param.program
+	program = param.program;
+	if strncmp(program,'vasp',4)
+		program = 'vasp';
+	end
+	switch program
 		case 'gaussian'
 			energy = gaussian(geom,param);
+		case 'vasp'
+			energy = vasp(geom,param);
 	end
 end
 
