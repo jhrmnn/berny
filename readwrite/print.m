@@ -2,6 +2,7 @@
 
 function print(s,varargin)
 	global fid steps
+	fseek(fid,0,'eof');
 	s = ['%i ' s '\n'];
 	if nargin > 1 && strcmp(varargin{end},'always')
 		% if last argument is 'always', print anyway

@@ -28,7 +28,7 @@ function [scr,run] = head(id,program)
 				'VASPDIR=(\S+)','tokens');
 			vasp = [vasp{1}{1} '-mp' program];
 			putenv('PATH',[getenv('PATH') sep vasp sep mpi]);
-			run = [mpi ' ' vasp '/vasp'];
+			run = [mpi ' ' vasp '/vasp 2> /dev/null'];
 	end
 end
 

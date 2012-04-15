@@ -9,21 +9,29 @@ function energy = vasp(geom,param)
 	nelm = readnelm();
 	fprintf(fid,'entering VASP ...\n'); octfflush(fid);
 	t = time(); % start clock
+	if exist('OSZICAR','file'), system('mv OSZICAR{,.old}'); end
 	system(run); % run VASP
-	if nlines('OSZICAR')-3 == nelm
+	converged = nlines('OSZICAR')-3 ~= nelm;
+	system('cat OSZICAR >> OSZICAR.old; mv OSZICAR{.old,}');
+	if ~converged
 		delete('WAVECAR');
 		delete('CHGCAR');
-		system('cat OSZICAR >> OSZICAR.opt');
 		warning(['VASP did not converge, starting again '...
-			'without WAVECAR and CHGCAR\n']);
+			'without WAVECAR and CHGCAR']);
+		system('mv OSZICAR{,.old}');
 		system(run);
-		if nlines('OSZICAR')-3 == nelm
-			system('cat OSZICAR >> OSZICAR.opt');
+		converged = nlines('OSZICAR')-3 ~= nelm;
+		system('cat OSZICAR >> OSZICAR.old; mv OSZICAR{.old,}');
+		if ~converged
+			system('cat OSZICAR >> OSZICAR.old; mv OSZICAR{.old,}');
 			error(['VASP did not converge even after '...
-				'restart, terminating optimization\n']);
+				'restart, terminating optimization']);
+		else
+			system('cat OSZICAR >> OSZICAR.old; mv OSZICAR{.old,}');
 		end
+	else
+		system('cat OSZICAR >> OSZICAR.old; mv OSZICAR{.old,}');
 	end
-	system('cat OSZICAR >> OSZICAR.opt');
 	fprintf(fid,'... exiting VASP after %i seconds\n',...
 		round(time()-t)); octfflush(fid); % stop clock
 	s = fileread('OUTCAR');

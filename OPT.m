@@ -23,13 +23,9 @@ fprintf(fid,[... % print jobfile
 	'#!/home/hermann/local/bin/oct -q\n'... % run in octave
 	'addpath(''%s'');\n'... % update path
 	'driver(''%s'');\n'... % run main driver
-	'delete %s\n'],p,optfile,jobfile); % delete jobfile
+	'delete %s\n'],... % delete jobfile
+	p,optfile,jobfile);
 fclose(fid);
-if exist('qout','dir') % output folder
-	system('rm qout/*');
-else
-	mkdir qout
-end
 param = setparam(optfile); % just to obtain program
 if strncmp(param.program,'vasp',4)
 	envir = 'mpi'; % if VASP, run MPI
@@ -37,8 +33,8 @@ else
 	envir = 'shm'; % otherwise run single host machine
 end
 command = sprintf(...
-	'qsub -V -l mem=%s -cwd -e qout -o qout -pe %s %s -N %s -q %s %s',...
-	memory,envir,ncpu,optfile,queue,jobfile); % queueing command
+	'qsub -V -l mem=%s -cwd -e %s.log -o /dev/null -pe %s %s -N %s -q %s %s',...
+	memory,optfile,envir,ncpu,optfile,queue,jobfile); % queueing command
 fprintf(1,'Submitting optimization job %s to queue %s\n',jobfile,queue);
 fprintf(1,'%s\n',command);
-system(command); % RUN!
+system(command); % put into queue

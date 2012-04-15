@@ -1,12 +1,12 @@
 % main driver of the berny package. 12/04/13
 
 function driver(optname)
-	try
 	param = setparam(optname); % set parameters
-	param.logfile = [optname '.log']; % set logfile
-	fid = fopen(param.logfile,'w'); % open logfile
+	logfile = [optname '.log']; % set logfile
+	fid = fopen(logfile,'w'); % open logfile
 	if strncmp(param.program,'vasp',4)
 		geom = car2geom(param.geometry);
+		delete('OSZICAR');
 	else
 		geom = readX(param.geometry);
 		geom.periodic = false;
@@ -28,20 +28,14 @@ function driver(optname)
 			round(time()-t)); octfflush(1); % stop clock
 		if state, break, end
 		if i == param.maxsteps
-			fprintf(fid,'! Maximum number of steps reached, terminating\n');
+			fprintf(fid,'Maximum number of steps reached\n');
 		end
 	end
 	if state
-		fprintf(fid,'Geometry converged in %i steps',i);
-	else
-		fprintf(fid,'! Geometry DID NOT converged');
+		fprintf(fid,'Geometry converged in %i steps\n',i);
 	end
+	fclose(fid);
 	delete berny.mat
-	catch
-		fprintf(fid,'! There was an error.\n');
-		fprintf(fid,'! Examine files in directory "qout".\n');
-		rethrow(lasterror());
-	end
 end
 
 function energy = getenergy(geom,param)

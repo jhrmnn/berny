@@ -37,10 +37,6 @@ function [geom,state] = berny(geom,energy)
 		% transform internal step (a.u.) into cartesian step (angstrom)
 	q.dq = correct(q.new-q.now); % total actual step
 	state = testconvergence(proj*g.now,q,trust);
-	if state % if converged
-		if fid > 0, fclose(fid); end
-		return
-	end
 	if steps == 1 || e.now < e.best
 		q.best = q.now; e.best = e.now; g.best = g.now;
 	end
