@@ -11,9 +11,6 @@ function A = ginv(A)
 		if isempty(i)
 			i = length(D);
 		end
-		if i == 1
-			error('Cannot make generalized inverse of zero matrix');
-		end
 		gap = D(i-1)/D(i);
 		if gap > thre2, break, end
 		thre1 = 10*thre1;
@@ -22,7 +19,7 @@ function A = ginv(A)
 		end
 	end
 	if gap < thre3
-		print('! Warning: Pseudoinverse gap: %.3g',gap);
+		warning('Pseudoinverse gap: %.3g',gap);
 	end
 	D(D<thre1) = 0;
 	D(D>0) = 1./D(D>0);

@@ -24,8 +24,13 @@ function bond = onlyallowed(bond,allowed,atoms,R)
 		end
 	end
 	for i = 1:size(allowed.atoms,1)
-		% to do
-		error('finish onlyallowed');
+		rule = allowed.elems(i,:);
+		neigh = find(bond(rule(1),:));
+		distances = R(rule(1),neigh);
+		sorted = sort(distances);
+		maxdist = sorted(rule(2));
+		allow(rule(1),neigh(distances<maxdist)) = true;
+		allow(neigh(distances<maxdist),rule(1)) = true;
 	end
 	bond = allow & bond;
 end

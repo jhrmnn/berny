@@ -3,13 +3,13 @@
 function test()
 	addpath core coords math periodic readwrite tests
 	try
-% 		h3molecule();
-% 		hcrystal();
-		fau();
-% 		acetic();
+		h3molecule();
+		hcrystal();
+% 		fau();
+		acetic();
 	catch % octave doesn't know "catch ME"
 		delete berny.mat
-		rethrow(lasterror);
+		rethrow(lasterror());
 	end
 end
 

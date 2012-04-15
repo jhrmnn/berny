@@ -4,6 +4,7 @@ function energy = vasp(geom,param)
 	fid = param.fid;
 	id = getenv('JOB_ID'); % get job ID
 	[scr,run] = head(id,param.program); % set PATH, make scratch
+	rmdir(scr,'s'); % delete scratch
 	geom2car(geom,'POSCAR'); % write geometry to POSCAR
 	nelm = readnelm();
 	fprintf(fid,'entering VASP ...\n'); octfflush(fid);
@@ -13,18 +14,18 @@ function energy = vasp(geom,param)
 		delete('WAVECAR');
 		delete('CHGCAR');
 		system('cat OSZICAR >> OSZICAR.opt');
-		fprintf(fid,['! VASP did not converge, starting again '...
-			'without WAVECAR and CHGCAR\n']); octfflush(fid);
+		warning(['VASP did not converge, starting again '...
+			'without WAVECAR and CHGCAR\n']);
 		system(run);
 		if nlines('OSZICAR')-3 == nelm
 			system('cat OSZICAR >> OSZICAR.opt');
-			error('!! VASP did not converge even after restart, terminating');
+			error(['VASP did not converge even after '...
+				'restart, terminating optimization\n']);
 		end
 	end
 	system('cat OSZICAR >> OSZICAR.opt');
 	fprintf(fid,'... exiting VASP after %i seconds\n',...
 		round(time()-t)); octfflush(fid); % stop clock
-	rmdir(scr,'s'); % delete scratch
 	s = fileread('OUTCAR');
 	e = regexp(s,'ENERGIE.+TOTEN += +(-?\d+\.\d*) eV','tokens');
 	energy.E = str2double(e{1}{1});
