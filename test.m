@@ -58,8 +58,8 @@ end
 function testcase(name,geom,param,bench,type)
 	if geom.periodic, arg{2} = diag(geom.abc); end
 	results = {'ok' 'FAIL!'};
-	%param.logfile = [name '.txt']; % logfile
-	param.fid = fopen(param.logfile,'w'); % open logfile
+	logfile = [name '.txt']; % logfile
+	param.fid = fopen(logfile,'w'); % open logfile
 	tic; % start clock
 	fprintf(1,'testing %s ...\n',name); octfflush(1);
 	geom = initiate(geom,param); % prepare stuff
@@ -72,7 +72,7 @@ function testcase(name,geom,param,bench,type)
 			geomname = [name '.xyz']; % geom history
 			if exist(geomname,'file'), delete(geomname), end
 			while true
-				%writeX(geom,geomname); % write geometry
+				writeX(geom,geomname); % write geometry
 				arg{1} = geom.xyz;
 				[energy.E,energy.g] = morse(arg{:}); % obtain energy
 				[geom,state] = berny(geom,energy); % perform berny
@@ -86,5 +86,6 @@ function testcase(name,geom,param,bench,type)
 		what,diff,results{failed+1});
 	toc; octfflush(1); % stop clock
 	fprintf(1,'\n');
+	fclose(param.fid);
 	delete berny.mat
 end

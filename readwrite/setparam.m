@@ -16,7 +16,6 @@ function param = defaults()
 	param.trust = 0.3;
 	param.allowed = '';
 	param.symmetry = '';
-	param.logfile = '';
 end
 
 function param = addparams(param,file)

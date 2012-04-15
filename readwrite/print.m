@@ -2,7 +2,6 @@
 
 function print(s,varargin)
 	global fid steps
-	fseek(fid,0,'eof');
 	s = ['%i ' s '\n'];
 	if nargin > 1 && strcmp(varargin{end},'always')
 		% if last argument is 'always', print anyway
@@ -11,6 +10,7 @@ function print(s,varargin)
 		octfflush(1);
 	end
 	if fid > 0
+		fseek(fid,0,'eof');
 		fprintf(fid,s,steps,varargin{:});
 		octfflush(fid);
 	end
