@@ -17,7 +17,11 @@ function driver(optname)
 	geomname = [optname '.xyz']; % geometry history
 	if exist(geomname,'file'), delete(geomname); end
 	param.fid = fid; % put fid into parameters
+	fprintf(fid,'entering initialitation ...\n'); octfflush(1);
+	t = time(); % start clock
 	geom = initiate(geom,param); % make initialization stuff
+	fprintf(fid,'... exiting initialization after %i seconds\n',...
+		round(time()-t)); octfflush(1); % stop clock
 	for i = 1:param.maxsteps
 		writeX(geom,geomname); % write current geometry (after symmetrization)
 		energy = getenergy(geom,param); % obtain energy
