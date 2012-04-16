@@ -9,7 +9,7 @@ function energy = gaussian(geom,param)
 	copyfile(param.input,scr); % copy input to scratch
 	cd(scr); % go to scratch
 	writeX(geom,'opt.xyz'); % write geometry to xyz
-	fprintf(fid,'entering Gaussian ... '); octfflush(fid);
+	fprintf(fid,'entering Gaussian ...\n'); octfflush(fid);
 	t = time(); % start clock
 	fidxyz = fopen('opt.xyz','r'); % open xyz geometry
 	fidinput = fopen(param.input,'a'); % open input file
