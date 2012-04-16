@@ -83,7 +83,8 @@ function testcase(name,geom,param,bench,type)
 				writeX(geom,geomname); % write geometry
 				arg{1} = geom.xyz;
 				[energy.E,energy.g] = morse(arg{:}); % obtain energy
-				[geom,state] = berny(geom,energy); % perform berny
+				save -v6 -append berny.mat geom energy
+				[geom,state] = berny(); % perform berny
 				if state, break, end
 			end
 			diff = abs(bench-energy.E);

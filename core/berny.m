@@ -1,7 +1,7 @@
 % performs one step of Berny algorithm. 12/04/12
 
 function [geom,state] = berny()
-	global param angstrom
+	global param fid angstrom
 	load berny.mat q w e g H trust steps coords symm param energy geom
 	steps = steps+1;
 	e.now = energy.E; % energy
@@ -43,6 +43,7 @@ function [geom,state] = berny()
 		rms(q.dq),max(abs(q.dq)));
 	if isfield(geom,'zmat')
 		[geom.zmat.var,q.new] = red2zmat(q.dq,q.now,Bi,geom,coords);
+		geom.xyz = zmat2xyz(geom.zmat);
 	else
 		[geom.xyz,q.new] = red2car(q.dq,q.now,Bi,geom,coords,symm);
 		% transform internal step (a.u.) into cartesian step (angstrom)

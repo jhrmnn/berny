@@ -5,7 +5,7 @@ function [var,q] = red2zmat(dq,q,Bi,geom,coords)
 	var = geom.zmat.var;
 	thre = 1e-6;
 	thre2 = 1e-14;
-	maxit = 20;
+	maxit = 100;
 	err = rms(dq);
 	qtarget = q+dq;
 	wasrecalc = false;
@@ -17,7 +17,12 @@ function [var,q] = red2zmat(dq,q,Bi,geom,coords)
 		qnew = internals(geom,coords);
 		dqnew = correct(qtarget-qnew);
 		errnew = rms(dqnew);
-		if errnew > err+thre2 && ~wasrecalc
+		if errnew > err+thre2
+			if wasrecalc
+				msg = 'No improvement in transformation to Z-matrix after %ith iteration';
+				geom.zmat.var = var;
+				break
+			end
 			geom.xyz = xyz;
 			geom.zmat.var = var;
 			B = Bmat(geom,coords)*zmatgrad(geom.zmat)';
@@ -33,14 +38,14 @@ function [var,q] = red2zmat(dq,q,Bi,geom,coords)
 		dq = dqnew;
 		err = errnew;
 		if dvar < thre
-			msg = 'Perfect transformation to cartesian in %i iterations';
+			msg = 'Perfect transformation to Z-matrix in %i iterations';
 			break
 		end
 		if i >= maxit
-			msg = 'Transformation to cartesian terminated after %ith iteration';
+			msg = 'Transformation to Z-matrix terminated after %ith iteration';
 			break
 		end
 	end
 	print(msg,i);
-	print('* RMS(dx): %.3g, RMS(dq): %.3g',dvar,err);
+	print('* RMS(dzmat): %.3g, RMS(dq): %.3g',dvar,err);
 end
