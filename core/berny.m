@@ -1,18 +1,26 @@
 % performs one step of Berny algorithm. 12/04/12
 
 function [geom,state] = berny(geom,energy)
-	global param fid angstrom
+	global param angstrom
 	load berny.mat q w e g H trust steps coords symm param
 	steps = steps+1;
 	e.now = energy.E; % energy
 	g.now = reshape(energy.g',3*geom.n,1); % gradient in angstroms
 	print('Energy: %.12f',e.now,'always');
 	B = Bmat(geom,coords); % Wilson B matrix
+	if isfield(geom,'zmat')
+		Bxyz = B;
+		B = B*zmatgrad(geom.zmat)';
+	end
 	G = B*B';
 	Gi = ginv(G);
 	Bi = B'*Gi'; % inverse B matrix
 	proj = G*Gi; % projector on nonredundant subspace
-	g.now = Bi'*g.now/angstrom; % internal gradient in a.u.
+	if isfield(geom,'zmat')
+		g.now = ginv(Bxyz*Bxyz')*Bxyz*g.now/angstrom;
+	else
+		g.now = Bi'*g.now/angstrom; % internal gradient in a.u.
+	end
 	if steps > 1
 		H = updatehessian(H,correct(q.now-q.best),g.now-g.best);
 		trust = updatetrust(e.now-e.last,e.deP,q.dqq,trust);
@@ -33,8 +41,12 @@ function [geom,state] = berny(geom,energy)
 	q.dq = q.dql+q.dqq; % total inteded step
 	print('Total step: RMS: %.3g, max: %.3g',...
 		rms(q.dq),max(abs(q.dq)));
-	[geom.xyz,q.new] = red2car(q.dq,q.now,Bi,geom,coords,symm);
+	if isfield(geom,'zmat')
+		[geom.zmat.var,q.new] = red2zmat(q.dq,q.now,Bi,geom,coords);
+	else
+		[geom.xyz,q.new] = red2car(q.dq,q.now,Bi,geom,coords,symm);
 		% transform internal step (a.u.) into cartesian step (angstrom)
+	end
 	q.dq = correct(q.new-q.now); % total actual step
 	state = testconvergence(proj*g.now,q,trust);
 	if steps == 1 || e.now < e.best

@@ -57,3 +57,40 @@ for i = 1:nat
     end
 end
 zmat.def = cell2mat(zmat.def);
+
+% added by JH, 12/04/16
+
+global angstrom
+n = size(zmat.def,1);
+m = length(zmat.var);
+changed = false(m,1);
+for i = 2:n
+	if zmat.def(i,3) > -1000
+		zmat.def(i,3) = zmat.def(i,3)*angstrom;
+	else
+		k = -zmat.def(i,3)-1000;
+		if changed(k), continue, end
+		zmat.var(k) = zmat.var(k)*angstrom;
+		changed(k) = true;
+	end
+end
+for i = 3:n
+	if zmat.def(i,5) > -1000
+		zmat.def(i,5) = zmat.def(i,5)/180*pi;
+	else
+		k = -zmat.def(i,5)-1000;
+		if changed(k), continue, end
+		zmat.var(k) = zmat.var(k)/180*pi;
+		changed(k) = true;
+	end
+end
+for i = 4:n
+	if zmat.def(i,7) > -1000
+		zmat.def(i,7) = zmat.def(i,7)/180*pi;
+	else
+		k = -zmat.def(i,7)-1000;
+		if changed(k), continue, end
+		zmat.var(k) = zmat.var(k)/180*pi;
+		changed(k) = true;
+	end
+end

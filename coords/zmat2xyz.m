@@ -5,7 +5,7 @@ function xyz = zmat2xyz(zmat)
 z = zmat.def;
 i = z < -1000;
 z(i) = zmat.var(-z(i)-1000);
-z(:,[5 7]) = z(:,[5 7])/180*pi;  % deg -> rad
+% z(:,[5 7]) = z(:,[5 7])/180*pi;  % deg -> rad
 
 nat = size(z,1);
 xyz = zeros(nat,3);

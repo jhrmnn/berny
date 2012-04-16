@@ -8,7 +8,14 @@ function driver(optname)
 		geom = car2geom('POSCAR');
 		delete('OSZICAR');
 	else
-		geom = readX(param.geometry);
+		if isfield(param,'geometry')
+			geom = readX(param.geometry);
+		elseif isfield(param,'zmat')
+			geom.zmat = zread(param.zmat);
+			geom.atoms = geom.zmat.def(:,1);
+			geom.n = length(geom.atoms);
+			geom.xyz = zmat2xyz(geom.zmat);
+		end
 		geom.periodic = false;
 	end
 	[void,node] = system('uname -n'); % where are we?
@@ -18,19 +25,19 @@ function driver(optname)
 	if exist(geomname,'file'), delete(geomname); end
 	param.fid = fid; % put fid into parameters
 	fprintf(fid,'entering initialitation ...\n'); octfflush(fid);
-	t = time(); % start clock
+	t = clock(); % start clock
 	geom = initiate(geom,param); % make initialization stuff
-	fprintf(fid,'... exiting initialization after %i seconds\n',...
-		round(time()-t)); octfflush(fid); % stop clock
+	fprintf(fid,'... exiting initialization after %.2f seconds\n',...
+		etime(clock(),t)); octfflush(fid); % stop clock
 	state = false;
 	for i = 1:param.maxsteps
 		writeX(geom,geomname); % write current geometry (after symmetrization)
 		energy = getenergy(geom,param); % obtain energy
-		t = time(); % start clock
+		t = clock(); % start clock
 		fprintf(fid,'entering berny ...\n'); octfflush(fid);
 		[geom,state] = berny(geom,energy); % perform berny
-		fprintf(fid,'... exiting berny after %i seconds\n',...
-			round(time()-t)); octfflush(fid); % stop clock
+		fprintf(fid,'... exiting berny after %.2f seconds\n',...
+			etime(clock(),t)); octfflush(fid); % stop clock
 		if state, break, end
 		if i == param.maxsteps
 			fprintf(fid,'Maximum number of steps reached\n');
@@ -44,6 +51,8 @@ function driver(optname)
 end
 
 function energy = getenergy(geom,param)
+	energy.E = 0;
+	energy.g = zeros(length(geom.atoms),3);
 	if strncmp(param.program,'vasp',4)
 		energy = vasp(geom,param);
 	else

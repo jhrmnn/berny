@@ -9,7 +9,7 @@ function energy = vasp(geom,param)
 	geom2car(geom,'POSCAR'); % write geometry to POSCAR
 	nelm = readnelm();
 	fprintf(fid,'entering VASP ...\n'); octfflush(fid);
-	t = time(); % start clock
+	t = clock(); % start clock
 	if exist('OSZICAR','file'), system('mv OSZICAR{,.old}'); end
 	system(run); % run VASP
 	converged = nlines('OSZICAR')-3 ~= nelm;
@@ -35,8 +35,8 @@ function energy = vasp(geom,param)
 	else
 		system('cat OSZICAR >> OSZICAR.old; mv OSZICAR{.old,}');
 	end
-	fprintf(fid,'... exiting VASP after %i seconds\n',...
-		round(time()-t)); octfflush(fid); % stop clock
+	fprintf(fid,'... exiting VASP after %.2f seconds\n',...
+		etime(clock(),t)); octfflush(fid); % stop clock
 	s = fileread('OUTCAR');
 	e = regexp(s,'ENERGIE.+TOTEN += +(-?\d+\.\d*) eV','tokens');
 	energy.E = str2double(e{1}{1});

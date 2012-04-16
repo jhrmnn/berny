@@ -11,4 +11,3 @@ function R = dist(xyz)
 	delta = xyz(ind',:)-xyz(ind,:);
 	R = reshape(sqrt(sum(delta.^2,2)),n,n); % distances
 end
-
