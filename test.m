@@ -3,10 +3,11 @@
 function test()
 	addpath core coords math periodic readwrite tests
 	try
-		h3molecule();
-		hcrystal();
+% 		h3molecule();
+% 		hcrystal();
 % 		fau();
-		acetic();
+% 		acetic();
+		cau10();
 	catch % octave doesn't know "catch ME"
 		delete berny.mat
 		rethrow(lasterror());
@@ -34,7 +35,6 @@ function hcrystal()
 	bench = morse(geom.xyz,diag(geom.abc));
 	geom.xyz(:,1) = 0.75/2*[1; -1.1];
 	param = setparam();
-	param.symmetry = 'tests/h.symm';
 	testcase(name,geom,param,bench,'berny');
 end
 
@@ -45,6 +45,14 @@ function fau()
 	param.allowed = 'tests/fau.bonds';
 	load tests/fau-bench.mat bench
 	testcase(name,geom,param,bench,'intro');
+end
+
+function cau10()
+	name = 'CAU-10';
+	geom = car2geom('tests/cau-10.vasp');
+	param = setparam();
+	param.symmetry = 'tests/cau-10.symm';
+	testcase(name,geom,param,0,'intro');
 end
 
 function acetic()
