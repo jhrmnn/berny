@@ -5,24 +5,19 @@ function [var,q] = red2zmat(dq,q,Bi,geom,coords)
 	var = geom.zmat.var;
 	thre = 1e-6;
 	thre2 = 1e-14;
-	maxit = 100;
+	maxit = 20;
 	err = rms(dq);
 	qtarget = q+dq;
 	wasrecalc = false;
 	i = 0;
 	while true
 		i = i+1;
-		geom.zmat.var = var+Bi*dq;
+		geom.zmat.var = var+0.5*Bi*dq;
 		geom.xyz = zmat2xyz(geom.zmat);
 		qnew = internals(geom,coords);
 		dqnew = correct(qtarget-qnew);
 		errnew = rms(dqnew);
-		if errnew > err+thre2
-			if wasrecalc
-				msg = 'No improvement in transformation to Z-matrix after %ith iteration';
-				geom.zmat.var = var;
-				break
-			end
+		if errnew > err+thre2 && ~wasrecalc
 			geom.xyz = xyz;
 			geom.zmat.var = var;
 			B = Bmat(geom,coords)*zmatgrad(geom.zmat)';
