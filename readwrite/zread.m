@@ -60,7 +60,7 @@ zmat.def = cell2mat(zmat.def);
 
 % added by JH, 12/04/16
 
-global angstrom
+angstrom = 1.88972613288;
 n = size(zmat.def,1);
 m = length(zmat.var);
 changed = false(m,1);

@@ -19,6 +19,11 @@ end
 
 for i = 4:nat ; xyz(i,:) = addatom(z(i,:),xyz); end
 
+% added by JH, 12/04/16
+
+angstrom = 1.88972613288;
+xyz = xyz/angstrom;
+
 end
 
 function X4 = addatom(z,xyz)

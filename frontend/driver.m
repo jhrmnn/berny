@@ -33,6 +33,7 @@ function driver(optname)
 	for i = 1:param.maxsteps
 		writeX(geom,geomname); % write current geometry (after symmetrization)
 		energy = getenergy(geom,param); % obtain energy
+		save -v6 -append berny.mat energy geom
 		t = clock(); % start clock
 		fprintf(fid,'entering berny ...\n'); octfflush(fid);
 		[geom,state] = berny(geom,energy); % perform berny

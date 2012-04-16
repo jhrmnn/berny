@@ -1,8 +1,8 @@
 % performs one step of Berny algorithm. 12/04/12
 
-function [geom,state] = berny(geom,energy)
+function [geom,state] = berny()
 	global param angstrom
-	load berny.mat q w e g H trust steps coords symm param
+	load berny.mat q w e g H trust steps coords symm param energy geom
 	steps = steps+1;
 	e.now = energy.E; % energy
 	g.now = reshape(energy.g',3*geom.n,1); % gradient in angstroms
