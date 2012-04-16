@@ -23,7 +23,7 @@ function symm = str2symm(str)
 	A = zeros(3);
 	for i = 1:3
 		[x,y,z] = deal(one(i,1),one(i,2),one(i,3));
-		A(:,i) = eval(str)';
+		A(:,i) = eval(str)'-b;
 	end
 	symm = [A b];
 end
