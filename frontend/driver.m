@@ -5,8 +5,10 @@ function driver(optname)
 	logfile = [optname '.log']; % set logfile
 	fid = fopen(logfile,'w'); % open logfile
 	if strncmp(param.program,'vasp',4)
-		geom = car2geom(param.geometry);
+		geom = car2geom('POSCAR');
+		system('mv POSCAR{,.initial}');
 		delete('OSZICAR');
+		delete('CONTCAR');
 	else
 		geom = readX(param.geometry);
 		geom.periodic = false;
@@ -39,6 +41,9 @@ function driver(optname)
 		fprintf(fid,'Geometry converged in %i steps\n',i);
 	end
 	fclose(fid);
+	if strncmp(param.program,'vasp',4)
+		system('mv POSCAR CONTCAR; mv POSCAR{.initial,}');
+	end
 	delete berny.mat
 end
 
