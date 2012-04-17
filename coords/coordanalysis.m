@@ -10,13 +10,13 @@ function coordanalysis(ind,nfrag)
 	iangle = find(ind(:,3),1); % start of angles
 	if isempty(iangle), iangle = idih; end % if no angles
 	i = [1 iangle idih m+1]; % indexing
-	ind(ind(:,5)>2,:) = 2; % reduce degrees to max 2
+	ind(ind(:,5)>2,5) = 2; % reduce degrees to max 2
 	degrees = [2 3 3]; % number of degrees for bond, angle, dihedral
 	names = {'bonds' 'angles' 'dihedrals'};
 	adjectives = {'strong' 'weak' 'superweak'};
 	for k = 1:3
 		for l = 1:degrees(k)
-			number = length(find(ind(i(k):i(k+1)-1,5)==l-1));
+			number = sum(ind(i(k):i(k+1)-1,5)==(l-1));
 			           % number of coordinates of type k and degree l
 			if number > 0
 				print('* Number of %s %s: %g',...

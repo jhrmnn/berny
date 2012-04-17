@@ -13,7 +13,7 @@ function [coords,rho] = gencoords(geom,allowed)
 	R = dist(xyz); % matrix of interatomic distances
 	[bond,C,frags,cov] = covalentbond(R,atoms,allowed);
 	[bond,Cweak] = addhydrogenbonds(bond,C,R,atoms,allowed);
-	if ~all(C)
+	if ~all(Cweak)
 		bond = connectfragments(bond,Cweak,R,atoms,allowed);
 	end
 	bonds = genbonds(bond,C);

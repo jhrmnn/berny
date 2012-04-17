@@ -1,16 +1,18 @@
 % reduces periodic copies of inner coordinates in supercell.
 % 12/04/07
 
-function ind = reduce(ind,m)
-	astart = find(ind(:,3)~=0,1);
-	dstart = find(ind(:,4)~=0,1);
-	n = size(ind,1);
-	k(1:astart-1) = 2;
-	k(astart:dstart-1) = 3;
-	k(dstart:n) = 4;
-	keep = false(n,1);
-	jkl = atom2jkl((1:27*m)',m);
-	for i = 1:n
+function ind = reduce(ind,n)
+	m = size(ind,1);
+	idih = find(ind(:,4),1); % start of dihedrals
+	if isempty(idih), idih = m+1; end % if no dihedrals
+	iangle = find(ind(:,3),1); % start of angles
+	if isempty(iangle), iangle = idih; end % if no angles
+	k(1:iangle-1) = 2;
+	k(iangle:idih-1) = 3;
+	k(idih:m) = 4;
+	keep = false(m,1);
+	jkl = atom2jkl((1:27*n)',n);
+	for i = 1:m
 		switch k(i)
 			case 2
 				centre = round(sum(jkl(ind(i,1:2),:),1));
@@ -19,7 +21,7 @@ function ind = reduce(ind,m)
 			case 4
 				centre = round(sum(jkl(ind(i,2:3),:),1));
 		end
-		if all(centre==0 | centre==-1)
+		if all((centre==0)|(centre==-1))
 			keep(i) = true;
 		end
 	end
