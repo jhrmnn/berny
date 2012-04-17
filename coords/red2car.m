@@ -1,9 +1,8 @@
 % transforms step in internals into cartesians. 12/04/10
 
-function [xyz,q] = red2car(dq,q,Bi,geom,coords,symm)
+function [xyz,q] = red2car(dq,q,Bi,geom,coords)
 	global angstrom
 	xyz = geom.xyz;
-	n = geom.n;
 	thre = 1e-6;
 	thre2 = 1e-14;
 	maxit = 20;
@@ -13,8 +12,7 @@ function [xyz,q] = red2car(dq,q,Bi,geom,coords,symm)
 	i = 0;
 	while true
 		i = i+1;
-		geom.xyz = xyz+reshape(Bi*dq,3,n)'/angstrom;
-		geom.xyz = symmetrize(geom,symm);
+		geom.xyz = xyz+reshape(0.5*Bi*dq,3,geom.n)'/angstrom;
 		qnew = internals(geom,coords);
 		dqnew = correct(qtarget-qnew);
 		errnew = rms(dqnew);
@@ -27,20 +25,20 @@ function [xyz,q] = red2car(dq,q,Bi,geom,coords,symm)
 			continue
 		end
 		wasrecalc = false;
-		dx = rms(geom.xyz-xyz);
+		dxyz = rms(geom.xyz-xyz);
 		xyz = geom.xyz;
 		q = qnew;
 		dq = dqnew;
 		err = errnew;
-		if dx < thre
-			msg = 'Perfect transformation to cartesian in %i iterations';
+		if dxyz < thre
+			msg = 'Perfect transformation to cartesians in %i iterations';
 			break
 		end
 		if i >= maxit
-			msg = 'Transformation to cartesian terminated after %ith iteration';
+			msg = 'Transformation to cartesians terminated after %ith iteration';
 			break
 		end
 	end
 	print(msg,i);
-	print('* RMS(dx): %.3g, RMS(dq): %.3g',dx,err);
+	print('* RMS(dxyz): %.3g, RMS(dq): %.3g',dxyz,err);
 end

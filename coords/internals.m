@@ -5,6 +5,8 @@ function [q,w] = internals(geom,coords,rho)
 	m = size(coords,1);
 	if geom.periodic
 		xyz = copycell(geom.xyz,geom.abc,[-1 1; -1 1; -1 1])*angstrom;
+	elseif isfield(geom,'zmat')
+		xyz = zmat2xyz(geom.zmat);
 	else
 		xyz = geom.xyz*angstrom;
 	end

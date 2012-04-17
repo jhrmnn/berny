@@ -2,8 +2,9 @@
 
 function [geom,state] = berny()
 	global param fid angstrom
-	load berny.mat q w e g H trust steps coords symm param energy geom
+	load berny.mat q w H trust steps coords symm param energy geom
 	steps = steps+1;
+	if steps > 1, load berny.mat e g, end
 	e.now = energy.E; % energy
 	g.now = reshape(energy.g',3*geom.n,1); % gradient in angstroms
 	print('Energy: %.12f',e.now,'always');
@@ -26,7 +27,6 @@ function [geom,state] = berny()
 		trust = updatetrust(e.now-e.last,e.deP,q.dqq,trust);
 		dq = correct(q.best-q.now);
 		[t,ei] = linearsearch(e.now,e.best,g.now'*dq,g.best'*dq);
-		%[t,ei] = deal(0,e.now); % no linear interpolation
 		e.deP = ei-e.now; % predicted energy change
 		q.dql = t*dq; % linear step
 		gi = g.now+t*(g.best-g.now); % interpolated gradient
@@ -45,15 +45,15 @@ function [geom,state] = berny()
 		[geom.zmat.var,q.new] = red2zmat(q.dq,q.now,Bi,geom,coords);
 		geom.xyz = zmat2xyz(geom.zmat);
 	else
-		[geom.xyz,q.new] = red2car(q.dq,q.now,Bi,geom,coords,symm);
-		% transform internal step (a.u.) into cartesian step (angstrom)
+		[geom.xyz,q.new] = red2car(q.dq,q.now,Bi,geom,coords);
 	end
+	geom.xyz = symmetrize(geom,symm);
 	q.dq = correct(q.new-q.now); % total actual step
-	state = testconvergence(proj*g.now,q,trust);
+	state = testconvergence(B'*g.now,q,trust);
 	if steps == 1 || e.now < e.best
 		q.best = q.now; e.best = e.now; g.best = g.now;
 	end
 	q.now = q.new;
 	e.last = e.now;
- 	save -v6 -append berny.mat q e g H trust steps
+ 	save -v6 berny.mat q w e g H trust steps coords symm param
 end

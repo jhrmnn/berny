@@ -7,15 +7,14 @@ function driver(optname)
 	if strncmp(param.program,'vasp',4)
 		geom = car2geom('POSCAR');
 		delete('OSZICAR');
-	else
-		if isfield(param,'geometry')
-			geom = readX(param.geometry);
-		elseif isfield(param,'zmat')
-			geom.zmat = zread(param.zmat);
-			geom.atoms = geom.zmat.def(:,1);
-			geom.n = length(geom.atoms);
-			geom.xyz = zmat2xyz(geom.zmat);
-		end
+	elseif isfield(param,'geometry')
+		geom = readX(param.geometry);
+		geom.periodic = false;
+	elseif isfield(param,'zmat')
+		geom.zmat = zunits(zread(param.zmat),'toau');
+		geom.atoms = geom.zmat.def(:,1);
+		geom.n = length(geom.atoms);
+		geom.xyz = zmat2xyz(geom.zmat);
 		geom.periodic = false;
 	end
 	[void,node] = system('uname -n'); % where are we?
@@ -32,6 +31,11 @@ function driver(optname)
 	state = false;
 	for i = 1:param.maxsteps
 		writeX(geom,geomname); % write current geometry (after symmetrization)
+		if isfield(geom,'zmat')
+			zfid = fopen('zmat.opt','w');
+			fprintf(zfid,'%.5f\n',zunits(geom.zmat,'toangstrom'));
+			fclose(zfid);
+		end
 		energy = getenergy(geom,param); % obtain energy
 		save -v6 -append berny.mat energy geom
 		t = clock(); % start clock

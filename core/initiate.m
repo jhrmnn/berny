@@ -15,9 +15,8 @@ function geom = initiate(geom,param)
 	                    % generate internal redundant coordinates
 	[q.now,w] = internals(geom,coords,rho);
 	                     % evaluate coordinates and their weights
-	[e,g] = deal([]); % energy and gradient
 	H = hessian(rho,coords); % initial hessian guess
-	save -v6 berny.mat q w e g H trust steps coords symm param
+	save -v6 berny.mat q w H trust steps coords symm param
 end
 
 function y = getthreshold(param)
