@@ -31,10 +31,8 @@ function driver(optname)
 	state = false;
 	for i = 1:param.maxsteps
 		writeX(geom,geomname); % write current geometry (after symmetrization)
-		if isfield(geom,'zmat')
-			zfid = fopen('zmat.opt','w');
-			fprintf(zfid,'%.5f\n',zunits(geom.zmat,'toangstrom'));
-			fclose(zfid);
+		if isfield(param,'zmat')
+			zwrite(zunits(geom.zmat,'toangstrom'),[optname '.zmat']);
 		end
 		energy = getenergy(geom,param); % obtain energy
 		save -v6 -append berny.mat energy geom
