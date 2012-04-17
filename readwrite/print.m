@@ -12,7 +12,7 @@ function print(s,varargin)
 	end
 	if fid > 0
 		fseek(fid,0,'eof');
-		fprintf(fid,'%i ',steps)
+		fprintf(fid,'%i ',steps);
 		fprintf(fid,s,varargin{:});
 		fprintf(fid,'\n');
 		octfflush(fid);
