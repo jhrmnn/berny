@@ -40,7 +40,7 @@ function driver(optname)
 		save -v6 -append berny.mat energy geom
 		t = clock(); % start clock
 		fprintf(fid,'entering berny ...\n'); octfflush(fid);
-		[geom,state] = berny(geom,energy); % perform berny
+		[geom,state] = berny(); % perform berny
 		fprintf(fid,'... exiting berny after %.2f seconds\n',...
 			etime(clock(),t)); octfflush(fid); % stop clock
 		if state, break, end
