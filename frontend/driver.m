@@ -2,6 +2,7 @@
 
 function driver(optname)
 	param = setparam(optname); % set parameters
+	param.name = optname;
 	logfile = [optname '.log']; % set logfile
 	fid = fopen(logfile,'w'); % open logfile
 	if strncmp(param.program,'vasp',4)

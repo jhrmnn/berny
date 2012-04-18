@@ -1,7 +1,7 @@
 % reduces periodic copies of inner coordinates in supercell.
 % 12/04/07
 
-function ind = reduce(ind,n)
+function [ind,frags,atoms] = reduce(ind,frags,n)
 	m = size(ind,1);
 	idih = find(ind(:,4),1); % start of dihedrals
 	if isempty(idih), idih = m+1; end % if no dihedrals
@@ -26,6 +26,14 @@ function ind = reduce(ind,n)
 		end
 	end
 	ind = ind(keep,:);
+	atoms = unique(ind(:,1:4));
+	atoms = atoms(2:end); % discard zero
+	n = length(frags);
+	keep = false(n,1);
+	for i = 1:n
+		keep(i) = any(ismember(frags{i},atoms));
+	end
+	frags = frags(keep);
 end
 
 % converts a number of an atom in a 3x3x3 supercell into 

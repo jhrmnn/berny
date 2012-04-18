@@ -3,7 +3,7 @@
 function coordanalysis(ind,nfrag)
 	m = size(ind,1); % number of coordinates
 	print('Coordinates information:');
-	print('* Number of fragments (in supercell): %g',nfrag);
+	print('* Number of fragments: %g',nfrag);
 	print('* Number of internal coordinates: %g',m);
 	idih = find(ind(:,4),1); % start of dihedrals
 	if isempty(idih), idih = m+1; end % if no dihedrals

@@ -1,7 +1,7 @@
 % generates system of internal coordinates based on standard 
 % covalent radii. 12/04/07
 
-function [coords,rho] = gencoords(geom,allowed)
+function [coords,rho,geomdef] = gencoords(geom,allowed)
 	if geom.periodic		
 		celldim = [-1 1; -1 1; -1 1];
 		[xyz,atoms] = ...
@@ -21,7 +21,13 @@ function [coords,rho] = gencoords(geom,allowed)
 	dihs = gendihs(bond,xyz,C,bonds);
 	coords = [bonds; angles; dihs];
 	if geom.periodic
-		coords = reduce(coords,geom.n); % erase periodic images
+		[coords,frags,uniq] = ...
+			reduce(coords,frags,geom.n); % erase periodic images
+		geomdef.n = length(uniq);
+		geomdef.atoms = atoms(uniq);
+		geomdef.xyz = xyz(uniq,:);
+	else
+		geomdef = geom;
 	end
 	coordanalysis(coords,length(frags));
 	coords = coords(:,1:4);
