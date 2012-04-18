@@ -15,7 +15,7 @@ addpath $mpath
 driver('$optname');
 delete $optname.dqs
 JOBFILE
-program=$(grep program $optname| sed 's/program *= *\([^[:blank:]]*\)/\1/')
+program=$(grep program $optname | sed 's/program *= *\([^[:blank:]]*\)/\1/')
 if [ -n "$(echo $program | egrep -i 'vasp')" ]; then
 	sp="mpi"
 else
