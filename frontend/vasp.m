@@ -5,35 +5,31 @@ function energy = vasp(geom,param)
 	id = getenv('JOB_ID'); % get job ID
 	[scr,run] = head(id,param.program); % set PATH, make scratch
 	rmdir(scr,'s'); % delete scratch
-	system('mv POSCAR{,.old}');
+	system('mv POSCAR{,.start}');
 	geom2car(geom,'POSCAR'); % write geometry to POSCAR
 	nelm = readnelm();
 	fprintf(fid,'entering VASP ...\n'); octfflush(fid);
 	t = clock(); % start clock
-	if exist('OSZICAR','file'), system('mv OSZICAR{,.old}'); end
+	if exist('OSZICAR','file'), system('mv OSZICAR{,.past}'); end
 	system(run); % run VASP
 	converged = nlines('OSZICAR')-3 ~= nelm;
-	system('cat OSZICAR >> OSZICAR.old; mv OSZICAR{.old,}');
-	system('mv POSCAR{.old,}');
+	system('cat OSZICAR >> OSZICAR.past; mv OSZICAR{.past,}');
+	system('mv POSCAR{.start,}');
 	if ~converged
 		delete('WAVECAR');
 		delete('CHGCAR');
 		warning(['VASP did not converge, starting again '...
 			'without WAVECAR and CHGCAR']);
-		system('mv OSZICAR{,.old}');
+		system('mv OSZICAR{,.past}');
 		system(run);
 		converged = nlines('OSZICAR')-3 ~= nelm;
-		system('cat OSZICAR >> OSZICAR.old; mv OSZICAR{.old,}');
-		system('mv POSCAR{.old,}');
+		system('cat OSZICAR >> OSZICAR.past; mv OSZICAR{.past,}');
+		system('mv POSCAR{.past,}');
 		if ~converged
-			system('cat OSZICAR >> OSZICAR.old; mv OSZICAR{.old,}');
+			system('cat OSZICAR >> OSZICAR.past; mv OSZICAR{.past,}');
 			error(['VASP did not converge even after '...
 				'restart, terminating optimization']);
-		else
-			system('cat OSZICAR >> OSZICAR.old; mv OSZICAR{.old,}');
 		end
-	else
-		system('cat OSZICAR >> OSZICAR.old; mv OSZICAR{.old,}');
 	end
 	fprintf(fid,'... exiting VASP after %.2f seconds\n',...
 		etime(clock(),t)); octfflush(fid); % stop clock
