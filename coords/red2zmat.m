@@ -15,7 +15,7 @@ function [var,q] = red2zmat(dq,q,Bi,geom,coords)
 		dqnew = correct(qtarget-qnew);
 		errnew = rms(dqnew);
 		fletcher = err/errnew;
-		if fletcher > 1 && trust < 1
+		if fletcher > 1 && trust < 0.5
 			trust = 2*trust;
 		elseif fletcher < 1
 			trust = trust/2;

@@ -61,7 +61,7 @@ function energy = getenergy(geom,param)
 	else
 		switch param.program
 			case 'gaussian'
-				energy = gaussian2(geom,param);
+				energy = gaussian(geom,param);
 		end
 	end
 end
