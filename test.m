@@ -10,7 +10,6 @@ function test()
 % 		cau10();
 	catch % octave doesn't know "catch ME"
 		delete berny.mat
-		fclose all
 		rethrow(lasterror());
 	end
 end
@@ -36,6 +35,7 @@ function hcrystal()
 	bench = morse(geom.xyz,diag(geom.abc));
 	geom.xyz(:,1) = 0.75/2*[1; -1.1];
 	param = setparam();
+	param.geomdef = 1;
 	testcase(name,geom,param,bench,'berny');
 end
 
