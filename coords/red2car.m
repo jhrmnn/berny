@@ -4,27 +4,23 @@ function [xyz,q] = red2car(dq,q,Bi,geom,coords)
 	global angstrom
 	xyz = geom.xyz;
 	thre = 1e-6;
-	thre2 = 1e-14;
 	maxit = 20;
 	err = rms(dq);
 	qtarget = q+dq;
-	wasrecalc = false;
 	i = 0;
+	trust = 1;
 	while true
 		i = i+1;
-		geom.xyz = xyz+reshape(0.5*Bi*dq,3,geom.n)'/angstrom;
+		geom.xyz = xyz+reshape(Bi*(trust*dq),3,geom.n)'/angstrom;
 		qnew = internals(geom,coords);
 		dqnew = correct(qtarget-qnew);
 		errnew = rms(dqnew);
-		if errnew > err+thre2 && ~wasrecalc
-			geom.xyz = xyz;
-			B = Bmat(geom,coords);
-			Bi = B'*ginv(B*B')';
-			wasrecalc = true;
-			i = i-1;
-			continue
+		fletcher = err/errnew;
+		if fletcher > 1 && trust < 1
+			trust = 2*trust;
+		elseif fletcher < 1
+			trust = trust/2;
 		end
-		wasrecalc = false;
 		dxyz = rms(geom.xyz-xyz);
 		xyz = geom.xyz;
 		q = qnew;

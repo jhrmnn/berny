@@ -4,9 +4,9 @@ function test()
 	addpath core coords math periodic readwrite tests
 	try
 		h3molecule();
-		hcrystal();
+% 		hcrystal();
 % 		fau();
-		acetic();
+% 		acetic();
 % 		cau10();
 	catch % octave doesn't know "catch ME"
 		delete berny.mat
