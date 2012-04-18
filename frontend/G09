@@ -1,0 +1,90 @@
+#!/bin/sh
+
+# Gaussian 2009 revision A02 SGE submission script
+
+#echo
+#
+#if [ "$#" -lt 4 ] ; then
+#    echo "Usage: $(/usr/bin/basename $0) <input> <queue_name> <number_of_cpus> <memory_per_cpu>"
+#    echo
+#    echo "       When specifying memory requirements use standard units like 'G', 'M', 'k'."
+#    echo "       Memory requirements specified here should correspond to those specified in"
+#    echo "       the Gaussian input file divided by the number of processors."
+#    echo
+#    exit 1
+#fi
+
+#MAXCPUS=8
+
+input=$1
+#queue=$2
+#ncpus=$3
+#rqmem=$4
+
+g09root=$(readlink -f /usr/local/programs/common/gaussian/gaussian09/arch/amd64-pgi_10.4.0-acml)
+scrhome=/scratch/$USER
+scratch=/scratch/$USER/g09_$$
+
+#if [ ! -f $input ] ; then
+#    echo "Error: input file \"${input}\" does not exist!"
+#    echo
+#    exit 2
+#fi
+#
+#if [ "`echo $ncpus | grep '^[0-9]*$'`" != $ncpus ]; then
+#    echo "Error: number_of_cpus parameter is not a number!"
+#    echo
+#    exit 2
+#fi
+#
+#if [ "$ncpus" -lt 1 -o "$ncpus" -gt $MAXCPUS ]; then
+#    echo "Error: number of processors out of range (1..$MAXCPUS)"
+#    echo
+#    exit 2
+#fi
+
+#echo "%nprocshared=$ncpus" >${input}.par
+#cat $input | grep -iv "%nproc" >> ${input}.par
+
+#/bin/cat >$input.dqs <<EOF
+#!/bin/bash
+
+#$ -cwd
+#$ -e .
+#$ -o .
+
+export WORKDIR=$PWD                          # \$ replaced by $
+
+export g09root=${g09root}
+export LD_LIBRARY_PATH=${g09root}/g09
+export GAUSS_SCRDIR=${scratch}
+export GAUSS_EXEDIR=${g09root}/g09
+
+/bin/mkdir $GAUSS_SCRDIR
+
+cd $WORKDIR
+
+/bin/uname -a >${input}.log
+/bin/date >>${input}.log
+/bin/echo >>${input}.log
+
+/usr/bin/time -a -o ${input}.log $GAUSS_EXEDIR/g09 <${input} >>${input}.log
+
+/bin/rm -rf $GAUSS_SCRDIR
+/bin/rm -rf ${scrhome}/*.rwf
+/bin/rm -rf ${scrhome}/*.scr
+/bin/rm -rf ${input}.dqs
+/bin/rm -rf core
+
+#EOF
+
+#if [ "${ncpus}" -eq 1 ]; then
+#  echo "Submitting Gaussian 2009 job ${input}.dqs to queue ${queue}."
+#  qsub -q ${queue} -l mem=${rqmem} ${input}.dqs
+#else
+#  echo "Submitting Gaussian 2009 job ${input}.dqs to queue ${queue} for parallel execution on ${ncpus} processors."
+#  qsub -q ${queue} -l mem=${rqmem} -pe shm ${ncpus} ${input}.dqs
+#fi
+#
+#echo
+#
