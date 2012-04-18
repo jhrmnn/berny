@@ -11,8 +11,11 @@ function geom = initiate(geom,param)
 	allowed = readallowed(param.allowed); % read allowed bond types
 	symm = readsymm(param.symmetry); % read symmetry definition
 	geom.xyz = symmetrize(geom,symm); % symmetrize geometry
-	[coords,rho] = gencoords(geom,allowed);
+	[coords,rho,geomdef] = gencoords(geom,allowed);
 	                    % generate internal redundant coordinates
+	if param.geomdef
+		writeX(geomdef,[param.name '.def.xyz']);
+	end
 	[q.now,w] = internals(geom,coords,rho);
 	                     % evaluate coordinates and their weights
 	H = hessian(rho,coords); % initial hessian guess

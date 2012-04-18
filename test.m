@@ -4,12 +4,13 @@ function test()
 	addpath core coords math periodic readwrite tests
 	try
 		h3molecule();
-% 		hcrystal();
+		hcrystal();
 % 		fau();
-% 		acetic();
+		acetic();
 % 		cau10();
 	catch % octave doesn't know "catch ME"
 		delete berny.mat
+		fclose all
 		rethrow(lasterror());
 	end
 end
@@ -59,6 +60,7 @@ function acetic()
 	name = 'acetic acid';
 	geom = car2geom('tests/acetic.vasp');
 	param = setparam();
+	param.geomdef = 1;
 	load tests/acetic-bench.mat bench
 	testcase(name,geom,param,bench,'intro');
 end
@@ -66,7 +68,8 @@ end
 function testcase(name,geom,param,bench,type)
 	if geom.periodic, arg{2} = diag(geom.abc); end
 	results = {'ok' 'FAIL!'};
-	logfile = [name '.txt']; % logfile
+	param.name = name;
+	logfile = [name '.log']; % logfile
 	param.fid = fopen(logfile,'w'); % open logfile
 	tic; % start clock
 	fprintf(1,'testing %s ...\n',name); octfflush(1);
@@ -77,9 +80,9 @@ function testcase(name,geom,param,bench,type)
 			diff = norm(svd(Gi)-bench);
 			what = 'generalized inverse'; % what is benchmarked
 		case 'berny'
-			geomname = [name '.xyz']; % geom history
-			if exist(geomname,'file'), delete(geomname), end
 			while true
+				geomname = [name '.xyz']; % geom history
+				if exist(geomname,'file'), delete(geomname), end
 				writeX(geom,geomname); % write geometry
 				arg{1} = geom.xyz;
 				[energy.E,energy.g] = morse(arg{:}); % obtain energy

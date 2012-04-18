@@ -16,6 +16,7 @@ function param = defaults()
 	param.trust = 0.3;
 	param.allowed = '';
 	param.symmetry = '';
+	param.geomdef = 0;
 end
 
 function param = addparams(param,file)
