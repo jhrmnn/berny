@@ -1,0 +1,28 @@
+#!/bin/bash
+if [ $# -lt 4 ]; then
+	echo "Usage: OPT <opt file> <queue> <number of cpu> <memory per cpu>"
+	exit
+fi
+optname=$1
+queue=$2
+ncpu=$3
+memory=$4
+dir=$(dirname $(readlink -f $0))
+mpath=$(echo $dir/{core,coords,math,periodic,frontend,readwrite})
+cat > $optname.dqs <<JOBFILE
+#!/home/hermann/local/bin/oct -q
+addpath $mpath
+driver('$optname');
+delete $optname.dqs
+JOBFILE
+program=$(grep program $optname | sed 's/program *= *\([^[:blank:]]*\)/\1/')
+if [ -n "$(echo $program | egrep -i 'vasp')" ]; then
+	sp="mpi"
+else
+	sp="shm"
+fi
+command="qsub -V -l mem=$memory -cwd -e $optname.log -o /dev/null
+       -pe $sp $ncpu -N $optname -q $queue  $optname.dqs"
+echo "Submitting optimization job $jobname.dqs to queue $queue"
+echo "$ $command"
+$command
