@@ -13,24 +13,22 @@ function energy = vasp(geom,param)
 	if exist('OSZICAR','file'), system('mv OSZICAR{,.past}'); end
 	system(run); % run VASP
 	converged = nlines('OSZICAR')-3 ~= nelm;
-	system('cat OSZICAR >> OSZICAR.past; mv OSZICAR{.past,}');
-	system('mv POSCAR{.start,}');
+	system('cat OSZICAR >> OSZICAR.past');
 	if ~converged
 		delete('WAVECAR');
 		delete('CHGCAR');
 		warning(['VASP did not converge, starting again '...
 			'without WAVECAR and CHGCAR']);
-		system('mv OSZICAR{,.past}');
 		system(run);
 		converged = nlines('OSZICAR')-3 ~= nelm;
-		system('cat OSZICAR >> OSZICAR.past; mv OSZICAR{.past,}');
-		system('mv POSCAR{.past,}');
+		system('cat OSZICAR >> OSZICAR.past');
 		if ~converged
-			system('cat OSZICAR >> OSZICAR.past; mv OSZICAR{.past,}');
+			system('mv OSZICAR{.past,}; mv POSCAR{.start,}');
 			error(['VASP did not converge even after '...
 				'restart, terminating optimization']);
 		end
 	end
+	system('mv OSZICAR{.past,}; mv POSCAR{.start,}');
 	fprintf(fid,'... exiting VASP after %.2f seconds\n',...
 		etime(clock(),t)); octfflush(fid); % stop clock
 	s = fileread('OUTCAR');
