@@ -8,19 +8,12 @@ function [xyz,q] = red2car(dq,q,Bi,geom,coords)
 	err = rms(dq);
 	qtarget = q+dq;
 	i = 0;
-	trust = 1;
 	while true
 		i = i+1;
-		geom.xyz = xyz+reshape(Bi*(trust*dq),3,geom.n)'/angstrom;
+		geom.xyz = xyz+reshape(Bi*dq,3,geom.n)'/angstrom;
 		qnew = internals(geom,coords);
 		dqnew = correct(qtarget-qnew);
 		errnew = rms(dqnew);
-		fletcher = err/errnew;
-		if fletcher > 1 && trust < 1
-			trust = 2*trust;
-		elseif fletcher < 1
-			trust = trust/2;
-		end
 		dxyz = rms(geom.xyz-xyz);
 		xyz = geom.xyz;
 		q = qnew;
@@ -30,8 +23,12 @@ function [xyz,q] = red2car(dq,q,Bi,geom,coords)
 			msg = 'Perfect transformation to cartesians in %i iterations';
 			break
 		end
+		if i == 1
+			[xyz1,q1,dxyz1,err1] = deal(xyz,q,dxyz,err);
+		end
 		if i >= maxit
-			msg = 'Transformation to cartesians terminated after %ith iteration';
+			msg = 'Transformation did not converge in %i iterations';
+			[xyz,q,dxyz,err] = deal(xyz1,q1,dxyz1,err1);
 			break
 		end
 	end

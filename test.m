@@ -4,9 +4,9 @@ function test()
 	addpath core coords math periodic readwrite tests
 	try
 		h3molecule();
-		hcrystal();
+% 		hcrystal();
 % 		fau();
-		acetic();
+% 		acetic();
 % 		cau10();
 	catch % octave doesn't know "catch ME"
 		delete berny.mat
@@ -21,7 +21,7 @@ function h3molecule()
 	geom.xyz = [0 0 0; 1 1 0; 2 -1 1];
 	geom.periodic = false;
 	param = setparam();
-	param.stepmax = 1e-5;
+	param.trust = 1.2;
 	testcase(name,geom,param,-3,'berny');
 end
 
