@@ -42,14 +42,17 @@ function [geom,state] = berny()
 	print('Total step: RMS: %.3g, max: %.3g',...
 		rms(q.dq),max(abs(q.dq)));
 	if isfield(geom,'zmat')
+		varold = geom.zmat.var;
 		[geom.zmat.var,q.new] = red2zmat(q.dq,q.now,Bi,geom,coords);
+		dQ = geom.zmat.var-varold;
 		geom.xyz = zmat2xyz(geom.zmat);
 	else
 		[geom.xyz,q.new] = red2car(q.dq,q.now,Bi,geom,coords);
+		dQ = q.new-q.now;
 	end
 	geom.xyz = symmetrize(geom,symm);
 	q.dq = correct(q.new-q.now); % total actual step
-	state = testconvergence(B'*g.now,q,trust);
+	state = testconvergence(B'*g.now,dQ,q.dqq,trust);
 	if steps == 1 || e.now < e.best
 		q.best = q.now; e.best = e.now; g.best = g.now;
 	end

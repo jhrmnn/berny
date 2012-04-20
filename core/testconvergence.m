@@ -1,15 +1,15 @@
 % tests for convergence criteria. 12/04/10
 
-function state = testconvergence(g,q,trust)
+function state = testconvergence(g,dQ,dqq,trust)
 	global param
-	onsphere = abs(norm(q.dqq)-trust)<1e-10;
+	onsphere = abs(norm(dqq)-trust)<1e-10;
 	names = {'Gradient RMS' 'Step RMS'...
 		'Gradient maximum' 'Step maximum'};
 	results = {'no' 'OK'};
 	values = [rms(g) 0 max(abs(g)) 0];
 	flags = logical([1 0 1 0]);
 	if ~onsphere
-		values([2 4]) = [rms(q.dq) max(abs(q.dq))];
+		values([2 4]) = [rms(dQ) max(abs(dQ))];
 		flags([2 4]) = true;
 	end
 	print('Convergence criteria:');
