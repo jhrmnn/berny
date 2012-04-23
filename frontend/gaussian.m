@@ -22,7 +22,7 @@ function energy = gaussian(geom,param)
 	fprintf(fidinput,'\n'); % blank line for Gaussian
 	fclose(fidxyz); fclose(fidinput);
 	system(sprintf('g09 < %s > g09.log',param.input)); % run Gaussian
-	fprintf(fid,'exiting Gaussian after %.2f seconds\n',...
+	fprintf(fid,'... exiting Gaussian after %.2f seconds\n',...
 		etime(clock(),t)); octfflush(fid); % stop clock
 	s = fileread('g09.log'); % read Gaussian output
 	cd(dir); % go back to starting directory

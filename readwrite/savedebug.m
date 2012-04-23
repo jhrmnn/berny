@@ -9,5 +9,5 @@ function savedebug(var)
 	var.param.debug = 0;
 	var.param.fid = 1;
 	debug{end+1} = var;
-	save(file,'-v6','debug');
+	save('-v6',file,'debug');
 end

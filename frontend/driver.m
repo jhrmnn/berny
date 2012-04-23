@@ -1,7 +1,7 @@
 % main driver of the berny package. 12/04/13
 
 function driver(name)
-	fdelete([name '.xyz'],[name '.log'],[name '.mat']);
+	fdelete([name '.xyz'],[name '.mat']);
 	fid = fopen([name '.log'],'w'); % open logfile
 	param = setparam(name); % set parameters
 	param.name = name;
