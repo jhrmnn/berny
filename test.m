@@ -2,9 +2,9 @@
 
 function test()
 	addpath core coords math periodic readwrite tests
-% 	h3molecule();
+	h3molecule();
 % 	hcrystal();
-	fau();
+% 	fau();
 % 	acetic();
 % 	cau10();
 end
@@ -17,7 +17,6 @@ function h3molecule()
 	geom.periodic = false;
 	param = setparam();
 	param.trust = 1.2;
-	param.debug = 1;
 	testcase(name,geom,param,-3);
 end
 

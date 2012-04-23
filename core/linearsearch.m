@@ -26,7 +26,7 @@ function [t ei] = linearsearch(e0,e1,f0,f1)
 		msg = 'Quartic interpolation was performed';
 	end
 	if ~isempty(msg)
-		print('* %s: t = %g',msg,t);
-		print('* Interpolated energy: %4.6f',ei);
+		print('* %s: t = %.3g',msg,t);
+		print('* Interpolated energy: %.6f',ei);
 	end
 end
