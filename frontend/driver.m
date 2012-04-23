@@ -1,13 +1,14 @@
 % main driver of the berny package. 12/04/13
 
-function driver(optname)
-	param = setparam(optname); % set parameters
-	param.name = optname;
-	logfile = [optname '.log']; % set logfile
-	fid = fopen(logfile,'w'); % open logfile
+function driver(name)
+	fdelete([name '.xyz'],[name '.log'],[name '.mat']);
+	fid = fopen([name '.log'],'w'); % open logfile
+	param = setparam(name); % set parameters
+	param.name = name;
+	param.fid = fid;
 	if strncmp(param.program,'vasp',4)
 		geom = car2geom('POSCAR');
-		delete('OSZICAR');
+		fdelete('OSZICAR');
 	elseif isfield(param,'geometry')
 		geom = readX(param.geometry);
 		geom.periodic = false;
@@ -21,26 +22,24 @@ function driver(optname)
 	[void,node] = system('uname -n'); % where are we?
 	fprintf(fid,'Node: %s\n',strtrim(node));
 	fprintf(fid,'Time: %s\n',datestr(now()));
-	geomname = [optname '.xyz']; % geometry history
-	if exist(geomname,'file'), delete(geomname); end
-	param.fid = fid; % put fid into parameters
 	fprintf(fid,'entering initialitation ...\n'); octfflush(fid);
 	t = clock(); % start clock
-	geom = initiate(geom,param); % make initialization stuff
-	fprintf(fid,'... exiting initialization after %.2f seconds\n',...
+	var = initiate(geom,param); % make initialization stuff
+	fprintf(fid,'... finished in %.2f seconds\n',...
 		etime(clock(),t)); octfflush(fid); % stop clock
 	state = false;
 	for i = 1:param.maxsteps
-		writeX(geom,geomname); % write current geometry (after symmetrization)
+		geom = var.geom;
+		writeX(geom,[name '.xyz']); % write current geometry
 		if isfield(param,'zmat')
-			zwrite(zunits(geom.zmat,'toangstrom'),[optname '.zmat']);
+			zwrite(zunits(geom.zmat,'toangstrom'),[name '.zmat']);
 		end
-		energy = getenergy(geom,param); % obtain energy
-		save -v6 -append berny.mat energy geom
-		t = clock(); % start clock
+		var.energy = getenergy(geom,param); % obtain energy
 		fprintf(fid,'entering berny ...\n'); octfflush(fid);
-		[geom,state] = berny(); % perform berny
-		fprintf(fid,'... exiting berny after %.2f seconds\n',...
+		savedebug(var); % save variable environment into debug
+		t = clock(); % start clock
+		[state,var] = berny(var); % perform berny
+		fprintf(fid,'... finished in %.2f seconds\n',...
 			etime(clock(),t)); octfflush(fid); % stop clock
 		if state, break, end
 		if i == param.maxsteps

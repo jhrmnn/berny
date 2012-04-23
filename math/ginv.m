@@ -1,7 +1,7 @@
 % generalized inverse of matrix. 12/04/12
 
-function A = ginv(A)
-	[U,S,V] = svd(A);
+function Ai = ginv(A)
+	[U,S,V] = svd(A'*A);
 	D = diag(S);
 	thre1 = 1e-14;
 	thre2 = 1000;
@@ -23,6 +23,6 @@ function A = ginv(A)
 	end
 	D(D<thre1) = 0;
 	D(D>0) = 1./D(D>0);
-	A = V*diag(D)*U';
+	Ai = U*diag(D)*V'*A';
 end
 	

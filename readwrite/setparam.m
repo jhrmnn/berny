@@ -5,6 +5,7 @@ function param = setparam(jobfile)
 	if nargin > 0
 		param = addparams(param,jobfile);
 	end
+	param.threshold = getthreshold(param); % extract thresholds
 end
 
 function param = defaults()
@@ -17,6 +18,7 @@ function param = defaults()
 	param.allowed = '';
 	param.symmetry = '';
 	param.geomdef = 0;
+	param.debug = 0;
 end
 
 function param = addparams(param,file)
@@ -40,4 +42,12 @@ function param = addparams(param,file)
 		eval(['param.' var ' = ' val ';']); % evaluate
 	end
 	fclose(fid);
+end
+
+function y = getthreshold(param)
+	names = {'gradientrms' 'steprms' 'gradientmax' 'stepmax'};
+	y = zeros(1,4);
+	for i = 1:4
+		y(i) = param.(names{i});
+	end
 end

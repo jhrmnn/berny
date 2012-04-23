@@ -2,16 +2,11 @@
 
 function test()
 	addpath core coords math periodic readwrite tests
-	try
-		h3molecule();
-% 		hcrystal();
-% 		fau();
-% 		acetic();
-% 		cau10();
-	catch % octave doesn't know "catch ME"
-		delete berny.mat
-		rethrow(lasterror());
-	end
+% 	h3molecule();
+% 	hcrystal();
+	fau();
+% 	acetic();
+% 	cau10();
 end
 
 function h3molecule()
@@ -22,7 +17,8 @@ function h3molecule()
 	geom.periodic = false;
 	param = setparam();
 	param.trust = 1.2;
-	testcase(name,geom,param,-3,'berny');
+	param.debug = 1;
+	testcase(name,geom,param,-3);
 end
 
 function hcrystal()
@@ -35,8 +31,7 @@ function hcrystal()
 	bench = morse(geom.xyz,diag(geom.abc));
 	geom.xyz(:,1) = 0.75/2*[1; -1.1];
 	param = setparam();
-	param.geomdef = 1;
-	testcase(name,geom,param,bench,'berny');
+	testcase(name,geom,param,bench);
 end
 
 function fau()
@@ -44,8 +39,7 @@ function fau()
 	geom = car2geom('tests/fau.vasp');
 	param = setparam();
 	param.allowed = 'tests/fau.bonds';
-	load tests/fau-bench.mat bench
-	testcase(name,geom,param,bench,'intro');
+	testcase(name,geom,param);
 end
 
 function cau10()
@@ -53,7 +47,7 @@ function cau10()
 	geom = car2geom('tests/cau-10.vasp');
 	param = setparam();
 	param.symmetry = 'tests/cau-10.symm';
-	testcase(name,geom,param,0,'intro');
+	testcase(name,geom,param);
 end
 
 function acetic()
@@ -61,43 +55,46 @@ function acetic()
 	geom = car2geom('tests/acetic.vasp');
 	param = setparam();
 	param.geomdef = 1;
-	load tests/acetic-bench.mat bench
-	testcase(name,geom,param,bench,'intro');
+	testcase(name,geom,param);
 end
 
-function testcase(name,geom,param,bench,type)
-	if geom.periodic, arg{2} = diag(geom.abc); end
-	results = {'ok' 'FAIL!'};
+function testcase(name,geom,param,bench)
+	fdelete([name '.xyz'],[name '.log'],[name '.mat']);
 	param.name = name;
-	logfile = [name '.log']; % logfile
-	param.fid = fopen(logfile,'w'); % open logfile
-	tic; % start clock
-	fprintf(1,'testing %s ...\n',name); octfflush(1);
-	geom = initiate(geom,param); % prepare stuff
-	switch type
-		case 'intro' % if only B matrix to calculate
-			Gi = bernyintro(geom);
-			diff = norm(svd(Gi)-bench);
-			what = 'generalized inverse'; % what is benchmarked
-		case 'berny'
-			while true
-				geomname = [name '.xyz']; % geom history
-				if exist(geomname,'file'), delete(geomname), end
-				writeX(geom,geomname); % write geometry
-				arg{1} = geom.xyz;
-				[energy.E,energy.g] = morse(arg{:}); % obtain energy
-				save -v6 -append berny.mat geom energy
-				[geom,state] = berny(); % perform berny
-				if state, break, end
+	param.fid = fopen([name '.log'],'w');
+	fprintf(1,'testing %s ...\n',name);
+	t = clock(); % start clock
+	var = initiate(geom,param); % prepare stuff
+	while true
+		geom = var.geom;
+		writeX(geom,[name '.xyz']); % write geometry
+		if nargin > 3
+			if geom.periodic
+				[energy.E,energy.g] = morse(geom.xyz,diag(geom.abc));
+			else
+				[energy.E,energy.g] = morse(geom.xyz);
 			end
-			diff = abs(bench-energy.E);
-			what = 'energy';
+		else
+			energy.E = 0;
+			energy.g = zeros(size(geom.xyz));
+		end
+		var.energy = energy;
+		savedebug(var); % save variable environment into debug
+		[state,var] = berny(var); % perform berny
+		if state, break, end
 	end
-	failed = diff > 1e-6; % failed?
-	fprintf(1,'... %s diff is %.3e: %s\n',...
-		what,diff,results{failed+1});
-	toc; octfflush(1); % stop clock
-	fprintf(1,'\n');
 	fclose(param.fid);
-	delete berny.mat
+	if nargin > 3
+		dE = abs(bench-energy.E);
+		if abs(dE) < 1e-6
+			result = 'ok';
+		else
+			result = 'FAIL!';
+		end
+		concl = sprintf(': E diff is %.3e: %s',dE,result);
+	else
+		concl = '';
+	end
+	fprintf('... finished in %.2f seconds%s\n',...
+		etime(clock(),t),concl);
 end
