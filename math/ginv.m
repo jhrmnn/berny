@@ -3,26 +3,16 @@
 function Ai = ginv(A)
 	[U,S,V] = svd(A'*A);
 	D = diag(S);
-	thre1 = 1e-14;
-	thre2 = 1000;
-	thre3 = 1e8;
-	while true
-		i = find(D<thre1,1);
-		if isempty(i)
-			i = length(D);
-		end
-		gap = D(i-1)/D(i);
-		if gap > thre2, break, end
-		thre1 = 10*thre1;
-		if thre1 >= D(1)
-			error('Pseudoinverse: there is nowhere a gap of %g',gap);
-		end
+	thre1 = 1e-16;
+	thre2 = 1e8;
+	D(D<thre1) = thre1;
+	gap = D./[D(2:end); thre1];
+	[gap,n] = max(gap);
+	if gap < thre2
+		warning('Pseudoinverse gap of only: %.3g',gap);
 	end
-	if gap < thre3
-		warning('Pseudoinverse gap: %.3g',gap);
-	end
-	D(D<thre1) = 0;
-	D(D>0) = 1./D(D>0);
+	D(n+1:end) = 0;
+	D(1:n) = 1./D(1:n);
 	Ai = U*diag(D)*V'*A';
 end
 	
