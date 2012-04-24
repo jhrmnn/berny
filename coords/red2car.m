@@ -11,8 +11,8 @@ function [xyz,q] = red2car(dq,q,Bi,geom,coords)
 	while true
 		i = i+1;
 		geom.xyz = xyz+reshape(Bi*dq,3,geom.n)'/angstrom;
-		qnew = internals(geom,coords);
-		dqnew = correct(qtarget-qnew);
+		qnew = correct(internals(geom,coords),q,coords);
+		dqnew = qtarget-qnew;
 		errnew = rms(dqnew);
 		dxyz = rms(geom.xyz-xyz);
 		xyz = geom.xyz;

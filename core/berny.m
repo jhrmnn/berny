@@ -15,9 +15,9 @@ function [state,var] = berny(var)
 		Bi = ginv(B);
 	end
 	if steps > 1
-		H = updatehessian(H,correct(q.now-q.best),g.now-g.best);
+		H = updatehessian(H,q.now-q.best,g.now-g.best);
 		trust = updatetrust(e.now-e.last,e.deP,q.dqq,trust);
-		dq = correct(q.best-q.now);
+		dq = q.best-q.now;
 		[t,ei] = linearsearch(e.now,e.best,g.now'*dq,g.best'*dq);
 		e.deP = ei-e.now; % predicted energy change
 		q.dql = t*dq; % linear step
@@ -43,7 +43,7 @@ function [state,var] = berny(var)
 		dQ = q.new-q.now;
 	end
 	geom.xyz = symmetrize(geom,symm);
-	q.dq = correct(q.new-q.now); % total actual step
+	q.dq = q.new-q.now; % total actual step
 	state = testconvergence(B'*g.now,dQ,q.dqq,trust);
 	if steps == 1 || e.now < e.best
 		q.best = q.now; e.best = e.now; g.best = g.now;

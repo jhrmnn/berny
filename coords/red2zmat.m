@@ -9,9 +9,9 @@ function [var,q] = red2zmat(dq,q,Bi,geom,coords)
 	i = 0;
 	while true
 		i = i+1;
-		geom.zmat.var = var+0.5*Bi*dq;
-		qnew = internals(geom,coords);
-		dqnew = correct(qtarget-qnew);
+		geom.zmat.var = var+Bi*dq;
+		qnew = correct(internals(geom,coords),q,coords);
+		dqnew = qtarget-qnew;
 		errnew = rms(dqnew);
 		dvar = rms(geom.zmat.var-var);
 		var = geom.zmat.var;

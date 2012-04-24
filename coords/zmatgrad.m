@@ -1,6 +1,7 @@
 % calculates numerical gradient dXYZ/dZMAT. 12/04/15
 
 function gradxyz = zmatgrad(zmat,step)
+	global angstrom
 %
 if nargin==1 ; step = 1e-6; end
 npar = length(zmat.var);
@@ -10,13 +11,13 @@ zmatd = zmat;
 for i = 1:npar
     zmatd.var = zmat.var;
     zmatd.var(i) = zmat.var(i)-2*step;
-    X1 = zmat2xyz(zmatd);
+    X1 = zmat2xyz(zmatd)*angstrom;
     zmatd.var(i) = zmat.var(i)-step;
-    X2 = zmat2xyz(zmatd);
+    X2 = zmat2xyz(zmatd)*angstrom;
     zmatd.var(i) = zmat.var(i)+step;
-    X4 = zmat2xyz(zmatd);
+    X4 = zmat2xyz(zmatd)*angstrom;
     zmatd.var(i) = zmat.var(i)+2*step;
-    X5 = zmat2xyz(zmatd);
+    X5 = zmat2xyz(zmatd)*angstrom;
     G = (X1-8*X2+8*X4-X5)'/12/step;
     gradxyz(i,:) = G(:);
 end

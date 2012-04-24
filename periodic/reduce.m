@@ -3,13 +3,10 @@
 
 function [ind,frags,atoms] = reduce(ind,frags,n)
 	m = size(ind,1);
-	idih = find(ind(:,4),1); % start of dihedrals
-	if isempty(idih), idih = m+1; end % if no dihedrals
-	iangle = find(ind(:,3),1); % start of angles
-	if isempty(iangle), iangle = idih; end % if no angles
-	k(1:iangle-1) = 2;
-	k(iangle:idih-1) = 3;
-	k(idih:m) = 4;
+	istart = indexing(ind);
+	for i = 1:3
+		k(istart(i):istart(i+1)-1) = i+1;
+	end
 	keep = false(m,1);
 	jkl = atom2jkl((1:27*n)',n);
 	for i = 1:m

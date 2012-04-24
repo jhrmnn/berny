@@ -1,11 +1,12 @@
 % converts z-matrix to cartesian coordinates. 12/04/15
 
 function xyz = zmat2xyz(zmat)
+zmat = zunits(zmat,'toangstrom');
 %
 z = zmat.def;
 i = z < -1000;
 z(i) = zmat.var(-z(i)-1000);
-% z(:,[5 7]) = z(:,[5 7])/180*pi;  % deg -> rad
+z(:,[5 7]) = z(:,[5 7])/180*pi;  % deg -> rad
 
 nat = size(z,1);
 xyz = zeros(nat,3);
@@ -19,10 +20,6 @@ end
 
 for i = 4:nat ; xyz(i,:) = addatom(z(i,:),xyz); end
 
-% added by JH, 12/04/16
-
-angstrom = 1.88972613288;
-xyz = xyz/angstrom;
 
 end
 

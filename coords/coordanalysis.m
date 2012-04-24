@@ -5,11 +5,7 @@ function coordanalysis(ind,nfrag)
 	print('Coordinates information:');
 	print('* Number of fragments: %g',nfrag);
 	print('* Number of internal coordinates: %g',m);
-	idih = find(ind(:,4),1); % start of dihedrals
-	if isempty(idih), idih = m+1; end % if no dihedrals
-	iangle = find(ind(:,3),1); % start of angles
-	if isempty(iangle), iangle = idih; end % if no angles
-	i = [1 iangle idih m+1]; % indexing
+	i = indexing(ind);
 	ind(ind(:,5)>2,5) = 2; % reduce degrees to max 2
 	degrees = [2 3 3]; % number of degrees for bond, angle, dihedral
 	names = {'bonds' 'angles' 'dihedrals'};

@@ -18,5 +18,5 @@ function var = initiate(geom,param_arg)
 	[q.now,w] = internals(geom,coords,rho);
 	                     % evaluate coordinates and their weights
 	H = hessian(rho,coords); % initial hessian guess
-	var = savevar(param,steps,trust,symm,geom,coords,q,w,H);
+	var = savevar(param,steps,trust,symm,geom,coords,q,w,H,angstrom);
 end
