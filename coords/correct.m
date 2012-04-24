@@ -9,6 +9,7 @@ function q = correct(q,templ,coords)
 		k = circ(i);
 		q(k) = q(k)+2*pi*sign(templ(k)-q(k));
 	end
+	if isempty(top), return, end
 	n = length(top);
 	left = order(coords(top,1:3));
 	right = order(coords(top,2:4));

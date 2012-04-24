@@ -21,7 +21,12 @@ if [ -n "$(echo $program | egrep -i 'vasp')" ]; then
 else
 	sp="shm"
 fi
-command="qsub -V -l mem=$memory -cwd -e $optname.log -o /dev/null
+if [ -n "$(egrep -i 'debug' $optname)" ]; then
+	output="debug.out"
+else
+	output="/dev/null"
+fi
+command="qsub -V -l mem=$memory -cwd -e $optname.log -o $output
        -pe $sp $ncpu -N $optname -q $queue  $optname.dqs"
 echo "Submitting optimization job $jobname.dqs to queue $queue"
 echo "$ $command"
