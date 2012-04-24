@@ -48,9 +48,9 @@ function driver(name)
 	end
 	if state
 		fprintf(fid,'Geometry converged in %i steps\n',i);
+		if ~param.debug, fdelete([name '.mat']); end
 	end
 	fclose(fid);
-	delete berny.mat
 end
 
 function energy = getenergy(geom,param)

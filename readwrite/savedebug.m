@@ -1,7 +1,6 @@
 function savedebug(var)
-	if ~var.param.debug, return, end
 	file = [var.param.name '.mat'];
-	if exist(file,'file')
+	if var.param.debug && exist(file,'file')
 		load(file);
 	else
 		debug = {};
