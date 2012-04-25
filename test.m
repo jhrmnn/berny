@@ -3,9 +3,9 @@
 function test()
 	addpath core coords math periodic readwrite tests
 	h3molecule();
-% 	hcrystal();
-% 	fau();
-% 	acetic();
+	hcrystal();
+	fau();
+	acetic();
 % 	cau10();
 end
 
