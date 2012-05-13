@@ -26,7 +26,6 @@ function energy = gaussian(geom,param)
 		etime(clock(),t)); octfflush(fid); % stop clock
 	s = fileread('g09.log'); % read Gaussian output
 	cd(dir); % go back to starting directory
-	rmdir(scr,'s'); % delete scratch
 	E = regexp(s,'EUMP2 = +(-?\d+\.\d*)D([+-]\d*)','tokens'); % MP2
 	if isempty(E) % if not MP2 calculation
 		E = regexp(s,'SCF Done:[^=]+=  (-?\d+\.\d*) ','tokens');
@@ -44,5 +43,6 @@ function energy = gaussian(geom,param)
 			energy.g(i,j) = -str2double(g{3*(i-1)+j}{1})*angstrom;
 		end
 	end
+	rmdir(scr,'s'); % delete scratch
 end
 
