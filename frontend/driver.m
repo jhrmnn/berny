@@ -1,32 +1,42 @@
 % main driver of the berny package. 12/04/13
 
 function driver(name)
-	fdelete([name '.xyz'],[name '.mat']);
-	fid = fopen([name '.log'],'w'); % open logfile
 	param = setparam(name); % set parameters
-	param.name = name;
-	param.fid = fid;
-	if strncmp(param.program,'vasp',4)
-		geom = car2geom('POSCAR');
-		fdelete('OSZICAR');
-	elseif isfield(param,'geometry')
-		geom = readX(param.geometry);
-		geom.periodic = false;
-	elseif isfield(param,'zmat')
-		geom.zmat = zunits(zread(param.zmat),'toau');
-		geom.atoms = geom.zmat.def(:,1);
-		geom.n = length(geom.atoms);
-		geom.xyz = zmat2xyz(geom.zmat);
-		geom.periodic = false;
+	if isempty(param.restart)
+		fdelete([name '.xyz'],[name '.mat']);
+		fid = fopen([name '.log'],'w'); % open logfile
+		param.name = name;
+		param.fid = fid;
+		if strncmp(param.program,'vasp',4)
+			geom = car2geom('POSCAR');
+			fdelete('OSZICAR');
+		elseif isfield(param,'geometry')
+			geom = readX(param.geometry);
+			geom.periodic = false;
+		elseif isfield(param,'zmat')
+			geom.zmat = zunits(zread(param.zmat),'toau');
+			geom.atoms = geom.zmat.def(:,1);
+			geom.n = length(geom.atoms);
+			geom.xyz = zmat2xyz(geom.zmat);
+			geom.periodic = false;
+		end
+		[void,node] = system('uname -n'); % where are we?
+		fprintf(fid,'Node: %s\n',strtrim(node));
+		fprintf(fid,'Time: %s\n',datestr(now()));
+		fprintf(fid,'entering initialitation ...\n'); octfflush(fid);
+		t = clock(); % start clock
+		var = initiate(geom,param); % make initialization stuff
+		fprintf(fid,'... finished in %.2f seconds\n',...
+			etime(clock(),t)); octfflush(fid); % stop clock
+	else
+		S = load(param.restart);
+		var = S.debug{end};
+		fid = fopen([name '.restart.log'],'w');
+		[void,node] = system('uname -n'); % where are we?
+		fprintf(fid,'Node: %s\n',strtrim(node));
+		fprintf(fid,'Time: %s\n',datestr(now()));
+		var.param.fid = fid;
 	end
-	[void,node] = system('uname -n'); % where are we?
-	fprintf(fid,'Node: %s\n',strtrim(node));
-	fprintf(fid,'Time: %s\n',datestr(now()));
-	fprintf(fid,'entering initialitation ...\n'); octfflush(fid);
-	t = clock(); % start clock
-	var = initiate(geom,param); % make initialization stuff
-	fprintf(fid,'... finished in %.2f seconds\n',...
-		etime(clock(),t)); octfflush(fid); % stop clock
 	state = false;
 	for i = 1:param.maxsteps
 		geom = var.geom;

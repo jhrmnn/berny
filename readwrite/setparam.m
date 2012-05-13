@@ -19,6 +19,7 @@ function param = defaults()
 	param.symmetry = '';
 	param.geomdef = 0;
 	param.debug = 0;
+	param.restart = '';
 end
 
 function param = addparams(param,file)
