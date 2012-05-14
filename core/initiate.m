@@ -3,7 +3,6 @@
 
 function var = initiate(geom,param_arg)
 	global angstrom steps param
-	angstrom = 1.88972613288; % 1 angstrom in a.u.
 	steps = 0; % set steps counter
 	param = param_arg;
 	trust = param.trust; % initial trust radius
@@ -18,5 +17,5 @@ function var = initiate(geom,param_arg)
 	[q.now,w] = internals(geom,coords,rho);
 	                     % evaluate coordinates and their weights
 	H = hessian(rho,coords); % initial hessian guess
-	var = savevar(param,steps,trust,symm,geom,coords,q,w,H,angstrom);
+	var = savevar(param,steps,trust,symm,geom,coords,q,w,H);
 end

@@ -1,6 +1,8 @@
 % main driver of the berny package. 12/04/13
 
 function driver(name)
+	global angstrom
+	angstrom = 1.88972613288; % 1 angstrom in a.u.
 	param = setparam(name); % set parameters
 	if isempty(param.restart)
 		fdelete([name '.xyz'],[name '.mat']);
@@ -31,22 +33,29 @@ function driver(name)
 	else
 		S = load(param.restart);
 		var = S.debug{end};
-		fid = fopen([name '.restart.log'],'w');
+		s = fileread([name '.log']);
+		fid = fopen([name '.log'],'w');
+		fprintf(fid,s);
+		fprintf(fid,'--- RESTART ---\n');
 		[void,node] = system('uname -n'); % where are we?
 		fprintf(fid,'Node: %s\n',strtrim(node));
 		fprintf(fid,'Time: %s\n',datestr(now()));
+		octfflush(fid);
 		var.param.fid = fid;
 	end
 	state = false;
 	for i = 1:param.maxsteps
-		geom = var.geom;
-		writeX(geom,[name '.xyz']); % write current geometry
-		if isfield(param,'zmat')
-			zwrite(zunits(geom.zmat,'toangstrom'),[name '.zmat']);
+		if i > 1 || isempty(param.restart)
+			geom = var.geom;
+			param = var.param;
+			writeX(geom,[name '.xyz']); % write current geometry
+			if isfield(param,'zmat')
+				zwrite(zunits(geom.zmat,'toangstrom'),[name '.zmat']);
+			end
+			var.energy = getenergy(geom,param); % obtain energy
+			fprintf(fid,'entering berny ...\n'); octfflush(fid);
+			savedebug(var); % save variable environment into debug
 		end
-		var.energy = getenergy(geom,param); % obtain energy
-		fprintf(fid,'entering berny ...\n'); octfflush(fid);
-		savedebug(var); % save variable environment into debug
 		t = clock(); % start clock
 		[state,var] = berny(var); % perform berny
 		fprintf(fid,'... finished in %.2f seconds\n',...
