@@ -1,11 +1,13 @@
 % runs some tests on the berny package
 
 function test()
+	global angstrom
 	addpath core coords math periodic readwrite tests
+	angstrom = 1.88972613288;
 	h3molecule();
 	hcrystal();
-	fau();
-	acetic();
+% 	fau();
+% 	acetic();
 % 	cau10();
 end
 
