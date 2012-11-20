@@ -14,13 +14,21 @@ function geom = car2geom(filename)
 	elem = [elem{:}];
 	l = fgets(fid);
 	num = sscanf(l,'%i');
-	type = fscanf(fid,'%s',1);
+	type = fscanf(fid,'%c',1);
 	fgets(fid);
-	xyz = fscanf(fid,'%g',[3 sum(num)])';
+	if lower(type) == 's'
+		type = fscanf(fid,'%c',1);
+		fgets(fid);
+	end
+	xyz = zeros(sum(num), 3);
+	for i=1:sum(num)
+		xyz(i,:) = fscanf(fid, '%g', 3);
+		fgets(fid);
+	end
 	n = size(xyz,1);
 	fclose(fid);
 	
-	if lower(type(1)) == 'd'
+	if lower(type) == 'd'
 		xyz = xyz*abc; % transform to cartesians
 	end
 	atoms = zeros(n,1);

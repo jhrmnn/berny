@@ -2,8 +2,12 @@
 % covalent radii. 12/04/07
 
 function [coords,rho,geomdef] = gencoords(geom,allowed)
-	if geom.periodic		
+	global param
+	if geom.periodic
 		celldim = [-1 1; -1 1; -1 1];
+		if param.planar
+			celldim(3,:) = [0 0];
+		end
 		[xyz,atoms] = ...
 			copycell(geom.xyz,geom.abc,celldim,geom.atoms);
 	else
@@ -18,7 +22,11 @@ function [coords,rho,geomdef] = gencoords(geom,allowed)
 	end
 	bonds = genbonds(bond,C);
 	angles = genangles(bond,xyz,C);
-	dihs = gendihs(bond,xyz,C,bonds);
+	if ~param.nodihedrals
+		dihs = gendihs(bond,xyz,C,bonds);
+	else
+		dihs = [];
+	end
 	coords = [bonds; angles; dihs];
 	if geom.periodic
 		[coords,frags,uniq] = ...

@@ -2,13 +2,18 @@
 % 12/04/07
 
 function [ind,frags,atoms] = reduce(ind,frags,n)
+	global param
 	m = size(ind,1);
 	istart = indexing(ind);
 	for i = 1:3
 		k(istart(i):istart(i+1)-1) = i+1;
 	end
 	keep = false(m,1);
-	jkl = atom2jkl((1:27*n)',n);
+	if param.planar
+		jkl = atom2jkl2((1:9*n)',n);
+	else
+		jkl = atom2jkl((1:27*n)',n);
+	end
 	for i = 1:m
 		switch k(i)
 			case 2
@@ -41,5 +46,15 @@ function ijk = atom2jkl(atom,n)
 	ind = round((ind-i)/3);
 	j = rem(ind,3);
 	k = round((ind-j)/3);
+	ijk = [i j k]-1;
+end
+
+% converts a number of an atom in a 3x3x1 supercell into 
+% a cell's jkl
+function ijk = atom2jkl2(atom,n)
+	ind = floor((atom-1)/n);
+	i = rem(ind,3);
+	j = round((ind-i)/3);
+	k = ones(size(atom));
 	ijk = [i j k]-1;
 end
