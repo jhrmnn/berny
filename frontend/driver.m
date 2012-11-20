@@ -76,7 +76,7 @@ function energy = getenergy(geom,param)
 	energy.E = 0;
 	energy.g = zeros(length(geom.atoms),3);
 	if strncmp(param.program,'vasp',4)
-		energy = vasp(geom,param);
+		energy = vasp2(geom,param);
 	else
 		switch param.program
 			case 'gaussian'

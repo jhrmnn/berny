@@ -1,0 +1,65 @@
+#!/bin/bash
+
+launcher="qsub"
+
+procpernode=1
+nodes=1
+while getopts n:p:t:q:m: opt; do
+	case $opt in
+		n) nodes=$OPTARG;;
+		p) procpernode=$OPTARG;;
+		t) walltime=$OPTARG;;
+		q) queue=$OPTARG;;
+		m) memory=$OPTARG;;
+	esac
+done
+if [[ ! ($walltime && $queue) ]]; then
+	echo "Specify nodes, number of processors per node, walltime and queue"
+	exit
+fi
+if [[ $memory ]]; then
+	launcher=$launcher" -l mem=$memory"
+fi
+shift $(( OPTIND-1 ))
+file=$1
+
+if [[ ! -d out ]]; then
+	mkdir out
+fi
+
+dir=$(dirname $(readlink -f $0))
+mpath=$(echo $dir/{core,coords,math,periodic,frontend,readwrite})
+
+$launcher <<JOBFILE
+#!/bin/bash
+#PBS -N $(basename $(pwd))
+#PBS -l nodes=$nodes:ppn=$procpernode
+#PBS -j oe
+#PBS -o out
+#PBS -l walltime=$walltime
+#PBS -q $queue
+
+module purge
+module load octave
+module load vasp/5.3.2-intel12-openmpi
+
+echo "Beginning the job at \$(date +"%y-%m-%d %H:%M:%S")"
+echo
+
+cd \$PBS_O_WORKDIR
+
+cat INCAR
+
+cp INCAR INCAR.bkp
+sed "s/NPROC/$procpernode/g" INCAR.bkp > INCAR
+
+octave -q <<OCTAVEFILE
+addpath $mpath
+driver('$file');
+OCTAVEFILE
+
+mv INCAR.bkp INCAR
+
+echo "Ending the job at \$(date +"%y-%m-%d %H:%M:%S")"
+echo
+JOBFILE
