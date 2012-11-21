@@ -3,7 +3,10 @@
 function [Phi,grad] = ang(xyz,grad)
 	v1 = xyz(1,:)-xyz(2,:);
 	v2 = xyz(3,:)-xyz(2,:);
-	Phi = acos(v1*v2'/(norm(v1)*norm(v2)));
+	sc = v1*v2'/norm(v1)/norm(v2);
+	sc(sc<-1) = -1;
+	sc(sc>1) = 1;
+	Phi = acos(sc);
 	if nargin == 1, return, end
 	grad = zeros(3,3);
 	if norm(Phi) > pi-1e-6 % limit case for phi = 180
